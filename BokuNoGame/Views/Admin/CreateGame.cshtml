@@ -1,3 +1,14 @@
 ﻿@model BokuNoGame.ViewModels.CreateGameViewModel
 
-
+<div class="row">
+    <form asp-action="AddGameToDB" asp-route-gameId="@Model.Game.Id" method="post">
+        <div class="form-group">
+            <label asp-for="Game.Name"></label>
+            <div class="col-md-5">
+                <input asp-for="Game.Name" class="form-control"/>
+                <span asp-validation-for="Game.Name" class="text-danger"></span>
+            </div>
+        </div>
+        <input class="btn btn-success" type="submit" value="Добавить"/>
+    </form>
+</div>

@@ -35,9 +35,10 @@ namespace BokuNoGame.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddGameToDB(CreateGameViewModel model)
+        public async Task<IActionResult> AddGameToDB(Game game)
         {
-
+            await _context.Games.AddAsync(game);
+            await _context.SaveChangesAsync();
             return RedirectToAction("Administrate", "Account");
         }
     }
