@@ -28,7 +28,8 @@ namespace BokuNoGame
                 {
                     var userManager = services.GetRequiredService<UserManager<User>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    await Services.IdentityInitializer.InitializeAsync(userManager, roleManager);
+                    var context = services.GetService<AppDBContext>();
+                    await Services.IdentityInitializer.InitializeAsync(userManager, roleManager, context);
                 }
                 catch
                 {

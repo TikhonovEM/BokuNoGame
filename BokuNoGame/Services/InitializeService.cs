@@ -9,7 +9,9 @@ namespace BokuNoGame.Services
 {
     public class IdentityInitializer
     {
-        public static async Task InitializeAsync(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task InitializeAsync(UserManager<User> userManager, 
+            RoleManager<IdentityRole> roleManager, 
+            AppDBContext context)
         {
             var roles = new List<string>() 
             { 
@@ -43,6 +45,27 @@ namespace BokuNoGame.Services
                     await userManager.AddToRoleAsync(admin, "User");
                 }
             }
+
+            var catalogs = new List<string>()
+            {
+                "Запланировано",
+                "Играю на данный момент",
+                "Пройдено",
+                "Брошено"
+            };
+            foreach(var catalogName in catalogs)
+            {
+                if(!context.Catalogs.Any(c => c.Name.Equals(catalogName)))
+                {
+                    var catalog = new Catalog()
+                    {
+                        Name = catalogName
+                    };
+                    context.Catalogs.Add(catalog);
+                    await context.SaveChangesAsync();
+                }
+            }
+
         }
     }
 }

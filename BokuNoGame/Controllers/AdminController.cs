@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -37,9 +38,20 @@ namespace BokuNoGame.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddGameToDB(Game game)
+        public async Task<IActionResult> AddGameToDB(CreateGameViewModel model)
         {
-            await _context.Games.AddAsync(game);
+            if (model.Logo != null)
+            {
+                byte[] imageData = null;
+                // считываем переданный файл в массив байтов
+                using (var binaryReader = new BinaryReader(model.Logo.OpenReadStream()))
+                {
+                    imageData = binaryReader.ReadBytes((int)model.Logo.Length);
+                }
+                // установка массива байтов
+                model.Game.Logo = imageData;
+            }
+            await _context.Games.AddAsync(model.Game);
             await _context.SaveChangesAsync();
             return RedirectToAction("Administrate", "Account");
         }

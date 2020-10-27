@@ -1,14 +1,63 @@
 ﻿@model BokuNoGame.ViewModels.CreateGameViewModel
 
 <div class="row">
-    <form asp-controller="Admin" asp-action="AddGameToDB" method="post">
+    <form asp-controller="Admin" asp-action="AddGameToDB" enctype="multipart/form-data" method="post">
         <div class="form-group">
-            <label asp-for="Game.Name">Название игры</label>
+            <label asp-for="Game.Name"></label>
             <div class="col-md-5">
-                <input asp-for="Game.Name" class="form-control"/>
+                <input asp-for="Game.Name" class="form-control" size="100"/>
                 <span asp-validation-for="Game.Name" class="text-danger"></span>
             </div>
         </div>
-        <input class="btn btn-success" type="submit" value="Добавить"/>
+        <div class="form-group">
+            <label asp-for="Game.Description"></label>
+            <div class="col-md-5">
+                <textarea asp-for="Game.Description" class="form-control"></textarea>
+                <span asp-validation-for="Game.Description" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Game.Genre"></label>
+            <div class="col-md-5">
+                <select asp-for="Game.Genre" asp-items="Html.GetEnumSelectList<Genre>()" class="form-control"></select>
+                <span asp-validation-for="Game.Genre" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Game.Developer"></label>
+            <div class="col-md-5">
+                <input asp-for="Game.Developer" class="form-control"/>
+                <span asp-validation-for="Game.Developer" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Game.Publisher"></label>
+            <div class="col-md-5">
+                <input asp-for="Game.Publisher" class="form-control"/>
+                <span asp-validation-for="Game.Publisher" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Logo"></label>
+            <div class="col-md-5">
+                <input asp-for="Logo" class="form-control-file"/>
+                <span asp-validation-for="Logo" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Game.AgeRating"></label>
+            <div class="col-md-5">
+                <input asp-for="Game.AgeRating" class="form-control"/>
+                <span asp-validation-for="Game.AgeRating" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Game.ReleaseDate"></label>
+            <div class="col-md-5">
+                <input asp-for="Game.ReleaseDate" class="form-control"/>
+                <span asp-validation-for="Game.ReleaseDate" class="text-danger"></span>
+            </div>
+        </div>
+        <input class="btn btn-success" type="submit" value="Добавить" />
     </form>
 </div>
