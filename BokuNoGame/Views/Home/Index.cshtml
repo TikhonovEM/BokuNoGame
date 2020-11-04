@@ -1,10 +1,11 @@
 ﻿@{
     ViewData["Title"] = "Главная";
 }
+@inject AppDBContext context
 
 <div class="text-center">
     <h1 class="display-4">Добро пожаловать в BNG</h1>
-    <form asp-controller="Home" asp-action="GameList" method="post">
+    <form asp-controller="Game" asp-action="GameList" method="post">
         <div class="form-group">
             <label for="likeName"></label>
             <div class="col-md-5">
@@ -13,4 +14,19 @@
             </div>
         </div>        
     </form>
+    <div>
+        <ul class="list-inline">
+            @foreach(var game in context.GetTopMostPopularGames(5))
+            {
+                <li class="list-inline-item btn-outline-light">
+                    <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id" class="social-icon text-center">
+                        <div>
+                            <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="80" height="80" />
+                            <p>@game.Name</p>
+                        </div>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
 </div>

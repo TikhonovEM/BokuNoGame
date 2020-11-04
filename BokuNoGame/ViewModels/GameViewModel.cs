@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace BokuNoGame.ViewModels
 {
-    public class ProfileViewModel
+    public class GameViewModel
     {
-        public User User { get; set; }
-        public IQueryable<GameSummary> GameSummaries { get; set; }
+        public Game Game { get; set; }
+        public Catalog Catalog { get; set; }
     }
 }

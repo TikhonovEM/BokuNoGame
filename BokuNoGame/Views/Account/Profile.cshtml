@@ -1,5 +1,30 @@
 ﻿@model BokuNoGame.ViewModels.ProfileViewModel
 
-<div>
-    Это профиль пользователя @User.Identity.Name
+@section Scripts{
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+
+    <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js"></script>
+}
+<div class="container">
+    Это профиль пользователя @Model.User.UserName
+    <br />
+    <select id="catalogsList" asp-items="ViewBag.Catalogs" onchange="ReloadCatalog()"></select>
+    <div style="width:90%; margin:0 auto;">
+        <table id="userGameSummaries" class="table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>GameName</th>
+                    <th>Genre</th>
+                    <th>Rate</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    
 </div>

@@ -1,0 +1,58 @@
+﻿@model GameViewModel
+@inject AppDBContext context
+@inject Microsoft.AspNetCore.Identity.SignInManager<User> signInManager
+<section>
+    <div>
+        <header>
+            <h1>@Model.Game.Name</h1>
+        </header>
+        <div class="mainpage">
+            <div class="image">
+                <img src="data:image;base64,@System.Convert.ToBase64String(Model.Game.Logo)" width="150" height="200" />
+            </div>
+            <div class="info">
+                <div class="d-inline-block">
+                    <div>@Model.Game.Genre</div>
+                </div>
+                <div class="d-inline-block">
+                    <div>@Model.Game.Developer</div>
+                </div>
+                <div class="d-inline-block">
+                    <div>@Model.Game.Publisher</div>
+                </div>
+            </div>
+            <div class="description">
+                <p>@Model.Game.Description</p>
+            </div>
+        </div>
+    </div>
+</section>
+@if (signInManager.IsSignedIn(User))
+{
+    <section>
+        <div>
+            @if (Model.Catalog != null)
+            {
+                <form asp-controller="Game" asp-action="UpdateGameInUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
+                    <div class="form-group">
+                        <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control"></select>
+                        <label for="isDeleted">Удалить из списка</label>
+                        <input type="checkbox" id="isDeleted" name="isDeleted" value="false" 
+                               onchange="(function () { let checkbox = document.getElementById('isDeleted'); if (checkbox.value == 'false') checkbox.value = 'true'; else checkbox.value = 'false';})()"/>
+                        <input class="btn btn-success" type="submit" value="Обновить" />
+                    </div>
+                </form>
+            }
+            else
+            {
+                <form asp-controller="Game" asp-action="AddGameToUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
+                    <div class="form-group">
+                        <input type="hidden" name="game" value="@Model.Game" />
+                        <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control"></select>
+                        <input class="btn btn-success" type="submit" value="Добавить в список" />
+                    </div>
+                </form>
+            }
+        </div>
+    </section>
+}

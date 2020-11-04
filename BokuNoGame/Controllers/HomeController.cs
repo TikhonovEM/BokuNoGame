@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using BokuNoGame.Models;
 using Microsoft.AspNetCore.Authorization;
 using BokuNoGame.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace BokuNoGame.Controllers
 {
@@ -15,11 +16,13 @@ namespace BokuNoGame.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly AppDBContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, AppDBContext context)
+        public HomeController(ILogger<HomeController> logger, AppDBContext context, UserManager<User> userManager)
         {
             _logger = logger;
             _context = context;
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -27,19 +30,7 @@ namespace BokuNoGame.Controllers
             return View();
         }
 
-        public IActionResult GameList(string likeName)
-        {
-            var games = _context.Games.Where(g => g.Name.Contains(likeName)).ToList();
-            if (games.Count == 1)
-                return RedirectToAction("Game", new { gameId = games[0].Id });
-            return View(new GameListViewModel { Games = games });
-        }
 
-        public IActionResult Game(int gameId)
-        {
-            var game = _context.Games.Find(gameId);
-            return View(game);
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

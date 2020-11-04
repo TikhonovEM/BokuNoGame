@@ -9,6 +9,10 @@ using BokuNoGame.ViewModels;
 using BokuNoGame.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace RolesApp.Controllers
 {
@@ -18,13 +22,15 @@ namespace RolesApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly AppDBContext _dbContext;
         public AccountController(UserContext userContext, UserManager<User> userManager,
-            SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager)
+            SignInManager<User> signInManager, RoleManager<IdentityRole> roleManager, AppDBContext context)
         {
             _userContext = userContext;
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _dbContext = context;
         }
         [HttpGet]
         public IActionResult Register()
@@ -100,30 +106,70 @@ namespace RolesApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpGet]
-        public IActionResult Profile()
-        {
-            return View();
-        }
-
-        [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Profile(ProfileViewModel model)
         {
             model.User = await _userManager.GetUserAsync(User);
+            model.GameSummaries = _dbContext.GetGameSummaries(model.User.Id);
+            ViewBag.Catalogs = new SelectList(_dbContext.Catalogs, "Id", "Name");
             return View(model);
         }
 
-        [HttpGet]
-        public IActionResult Administrate()
-        {
-            return View();
-        }
         [Authorize(Roles = "Admin")]
-        [HttpPost]
         public async Task<IActionResult> Administrate(AdministrateViewModel model)
-        {
-            
+        {           
             return View(model);
+        }
+
+        public IActionResult LoadUserGameSummaries(int catalogId)
+        {
+            try
+            {
+                var draw = HttpContext.Request.Form["draw"].FirstOrDefault();
+                // Skiping number of Rows count  
+                var start = Request.Form["start"].FirstOrDefault();
+                // Paging Length 10,20  
+                var length = Request.Form["length"].FirstOrDefault();
+                // Sort Column Name  
+                var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+                // Sort Column Direction ( asc ,desc)  
+                var sortColumnDirection = Request.Form["order[0][dir]"].FirstOrDefault();
+                // Search Value from (Search box)  
+                var searchValue = Request.Form["search[value]"].FirstOrDefault();
+
+                //Paging Size (10,20,50,100)  
+                int pageSize = length != null ? Convert.ToInt32(length) : 0;
+                int skip = start != null ? Convert.ToInt32(start) : 0;
+                int recordsTotal = 0;
+
+                // Getting all Customer data  
+                var userId = _userManager.GetUserId(User);
+                var customerData = _dbContext.GetGameSummaries(userId);
+                customerData = customerData.Include(gs => gs.Catalog).Where(gs => gs.CatalogId == catalogId);
+
+                //Sorting  
+                if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDirection)))
+                {
+                    customerData = customerData.OrderBy(sortColumn + " " + sortColumnDirection);
+                }
+                //Search  
+                if (!string.IsNullOrEmpty(searchValue))
+                {
+                    customerData = customerData.Where(m => m.GameName == searchValue);
+                }
+
+                //total number of rows count   
+                recordsTotal = customerData.Count();
+                //Paging   
+                var data = customerData.Skip(skip).Take(pageSize).ToList();
+                //Returning Json Data  
+                return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = data });
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

@@ -27,6 +27,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -38,9 +39,78 @@
             &copy; 2020 - BokuNoGame
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+    <script>
+        var oTable;
+        var customParams = {
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "ajax": {
+                "url": "/Account/LoadUserGameSummaries?catalogId=1",
+                "type": "POST",
+                "datatype": "json"
+            },
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/725b2a2115b/i18n/Russian.json"
+            },
+            "columnDefs": [{
+                "targets": [0],
+                "visible": false,
+                "searchable": false
+            }],
+            "columns": [
+                { "data": "Id", "name": "Id", "autoWidth": true },
+                { "data": "GameName", "name": "GameName", "title": "Название", "autoWidth": true },
+                { "data": "GenreWrapper", "name": "GenreWrapper", "title": "Жанр", "autoWidth": true },
+                { "data": "Rate", "name": "Rate", "title": "Ваша оценка", "autoWidth": true },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return "<a href='#' class='btn btn-danger' onclick=DeleteData('" + row.Id + "'); >Delete</a>";
+                    }
+                },
+            ]
+
+        };
+        $(document).ready(function () {
+            oTable = $("#userGameSummaries").DataTable(customParams);
+        });
+
+
+    function DeleteData(GameSummaryID) {
+        if (confirm("Are you sure you want to delete ...?")) {
+            Delete(GameSummaryID);
+        } else {
+            return false;
+        }
+    }
+
+
+    function Delete(GameSummaryID) {
+        var url = '@Url.Content("~/")' + "DemoGrid/Delete";
+
+        $.post(url, { ID: GameSummaryID }, function(data) {
+        if (data) {
+            oTable = $('#userGameSummaries').DataTable();
+            oTable.draw();
+        } else {
+            alert("Something Went Wrong!");
+        }
+        });
+    }
+
+
+        function ReloadCatalog() {
+            let newurl = "/Account/LoadUserGameSummaries?catalogId=" + $("#catalogsList").val();
+            oTable.ajax.url(newurl).load();
+            
+        }
+    </script>
 </body>
 </html>

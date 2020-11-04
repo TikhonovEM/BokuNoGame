@@ -29,11 +29,9 @@ namespace BokuNoGame.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateGame(CreateGameViewModel model)
+        public IActionResult CreateGame(CreateGameViewModel model)
         {
-            var lastGame = _context.Games.OrderBy(g => g.Id).LastOrDefault();
-            var id = lastGame != null ? lastGame.Id + 1 : 1;
-            model.Game = new Models.Game() { Id = id};
+            model.Game = new Game();
             return View(model);
         }
 

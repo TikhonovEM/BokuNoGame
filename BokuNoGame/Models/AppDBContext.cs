@@ -18,6 +18,16 @@ namespace BokuNoGame.Models
         public DbSet<Catalog> Catalogs { get; set; }
         public DbSet<GameSummary> GameSummaries { get; set; }
 
+        public IQueryable<Game> GetTopMostPopularGames(int top)
+        {
+            return Games
+                .OrderByDescending(g => GameSummaries.Where(gs => gs.GameId == g.Id && gs.CatalogId == 2).Count())
+                .Take(top);
+        }
 
+        public IQueryable<GameSummary> GetGameSummaries(string userId)
+        {
+            return GameSummaries.Where(gs => gs.UserId.Equals(userId));
+        }
     }
 }
