@@ -35,10 +35,13 @@ namespace BokuNoGame.Controllers
         public async Task<IActionResult> Game(int gameId)
         {
             ViewBag.Catalogs = new SelectList(_context.Catalogs, "Id", "Name");
+
             var game = _context.Games.Find(gameId);
             var user = await _userManager.GetUserAsync(User);
+
             Catalog catalog = user != null ? _context.GameSummaries.Include(gs => gs.Catalog).Include(gs => gs.Game)
                 .FirstOrDefault(gs => gs.UserId.Equals(user.Id) && gs.GameId == gameId)?.Catalog : null;
+
             return View(new GameViewModel() { Game = game, Catalog = catalog });
         }
 
@@ -65,22 +68,27 @@ namespace BokuNoGame.Controllers
             return RedirectToAction("Game", new { gameId = game.Id });
         }
 
-        public async Task<IActionResult> UpdateGameInUserCatalog(int gameId, int catalogId, bool isDeleted)
+        public async Task<IActionResult> UpdateGameInUserCatalog(int gameId, int catalogId)
         {
             var userId = _userManager.GetUserId(User);
             var catalog = await _context.Catalogs.FindAsync(catalogId);
             var summary = _context.GameSummaries.First(gs => gs.GameId.Equals(gameId) && gs.UserId.Equals(userId));
-            if (isDeleted)
-            {                
-                _context.GameSummaries.Remove(summary);
-            }
-            else
-            {
-                summary.Catalog = catalog;
-                summary.CatalogId = catalog.Id;
-            }
+            summary.Catalog = catalog;
+            summary.CatalogId = catalog.Id;
             await _context.SaveChangesAsync();
             return RedirectToAction("Game", new { gameId });
+        }
+
+        public IActionResult DeleteGameFromUserCatalog(int gameSummaryId)
+        {
+            var summary = _context.GameSummaries.Find(gameSummaryId);
+            if (summary != null)
+            {
+                _context.GameSummaries.Remove(summary);
+                _context.SaveChanges();
+                return Ok();
+            }
+            return RedirectToAction("Profile", "Account");
         }
     }
 }

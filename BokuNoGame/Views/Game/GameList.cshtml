@@ -4,7 +4,7 @@
         @foreach (var game in Model.Games)
         {
         <li class="list-group-item btn btn-outline-light">
-            <a asp-controller="Home" asp-action="Game" asp-route-gameId="@game.Id">
+            <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id">
                 <div>
                     <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="80" height="80" />
                     <div>@game.Name</div>

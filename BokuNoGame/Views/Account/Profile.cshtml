@@ -18,13 +18,91 @@
             <thead>
                 <tr>
                     <th>Id</th>
+                    <th>GameId</th>
                     <th>GameName</th>
                     <th>Genre</th>
                     <th>Rate</th>
+                    <th>Open</th>
                     <th>Delete</th>
                 </tr>
             </thead>
         </table>
     </div>
-    
+
+    <script>
+        var oTable;
+        var customParams = {
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "ajax": {
+                "url": "/Account/LoadUserGameSummaries?catalogId=1",
+                "type": "POST",
+                "datatype": "json"
+            },
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/725b2a2115b/i18n/Russian.json"
+            },
+            "columnDefs": [{
+                "targets": [0, 1],
+                "visible": false,
+                "searchable": false
+            }],
+            "columns": [
+                { "data": "Id", "name": "Id", "autoWidth": true },
+                { "data": "GameId", "name": "GameId", "autoWidth": true},
+                { "data": "GameName", "name": "GameName", "title": "Название", "autoWidth": true },
+                { "data": "GenreWrapper", "name": "GenreWrapper", "title": "Жанр", "autoWidth": true },
+                { "data": "Rate", "name": "Rate", "title": "Ваша оценка", "autoWidth": true },
+                {
+                    "render": function (data, type, full, meta) {
+                        return '<a class="btn btn-info" href="/Game/Game?gameId=' + full.GameId + '">Страница игры</a>'
+                    },
+                    "title" : "Игра"
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return "<a href='#' class='btn btn-danger' onclick=DeleteData('" + row.Id + "'); >Delete</a>";
+                    },
+                    "title" : "Действия"
+                },
+            ]
+
+        };
+        $(document).ready(function () {
+            oTable = $("#userGameSummaries").DataTable(customParams);
+        });
+
+        $("#userGameSummaries tbody tr").click(function () {
+
+        });
+
+
+    function DeleteData(GameSummaryID) {
+        if (confirm("Подтвердите действие")) {
+            Delete(GameSummaryID);
+        } else {
+            return false;
+        }
+    }
+
+
+    function Delete(GameSummaryID) {
+        var url = '@Url.Content("~/")' + "Game/DeleteGameFromUserCatalog";
+
+        $.post(url, { gameSummaryId: GameSummaryID }, function (data) {
+            ReloadCatalog();
+            });
+    }
+
+
+        function ReloadCatalog() {
+            let newurl = "/Account/LoadUserGameSummaries?catalogId=" + $("#catalogsList").val();
+            oTable.ajax.url(newurl).load();
+
+        }
+    </script>
+
 </div>

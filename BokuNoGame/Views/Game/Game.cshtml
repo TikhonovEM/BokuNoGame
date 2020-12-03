@@ -36,9 +36,6 @@
                 <form asp-controller="Game" asp-action="UpdateGameInUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
                     <div class="form-group">
                         <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control"></select>
-                        <label for="isDeleted">Удалить из списка</label>
-                        <input type="checkbox" id="isDeleted" name="isDeleted" value="false" 
-                               onchange="(function () { let checkbox = document.getElementById('isDeleted'); if (checkbox.value == 'false') checkbox.value = 'true'; else checkbox.value = 'false';})()"/>
                         <input class="btn btn-success" type="submit" value="Обновить" />
                     </div>
                 </form>
