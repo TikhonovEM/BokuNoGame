@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NLog.Web;
 
 namespace BokuNoGame
 {
@@ -18,31 +19,53 @@ namespace BokuNoGame
     {
         public static async Task Main(string[] args)
         {
-            var webHost = BuildWebHost(args);
-
-            using (var scope = webHost.Services.CreateScope())
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            try
             {
-                var services = scope.ServiceProvider;
+                var webHost = BuildWebHost(args);
 
-                try
+                using (var scope = webHost.Services.CreateScope())
                 {
-                    var userManager = services.GetRequiredService<UserManager<User>>();
-                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-                    var context = services.GetService<AppDBContext>();
-                    await Services.IdentityInitializer.InitializeAsync(userManager, roleManager, context);
-                }
-                catch
-                {
-                    
+                    var services = scope.ServiceProvider;
+
+                    try
+                    {
+                        var userManager = services.GetRequiredService<UserManager<User>>();
+                        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                        var context = services.GetService<AppDBContext>();
+                        await Services.IdentityInitializer.InitializeAsync(userManager, roleManager, context);
+                        IntegrationServices.SteamIntegratonScheduler.Start(services);
+                    }
+                    catch
+                    {
+
+                    }
+
                 }
 
+                webHost.Run();
             }
-
-            webHost.Run();
+            catch (Exception e)
+            {
+                //NLog: catch setup errors
+                logger.Error(e, "Stopped program because of exception");
+                throw;
+            }
+            finally
+            {
+                NLog.LogManager.Shutdown();
+            }
         }
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>().Build();
+            .UseStartup<Startup>()
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.SetMinimumLevel(LogLevel.Trace);
+            })
+            .UseNLog()
+            .Build();
     }
 }

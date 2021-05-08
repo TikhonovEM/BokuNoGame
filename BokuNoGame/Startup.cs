@@ -13,6 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Serialization;
+using BokuNoGame.IntegrationServices;
+using Microsoft.Extensions.Logging;
+using BokuNoGame.Services;
 
 namespace BokuNoGame
 {
@@ -23,7 +26,7 @@ namespace BokuNoGame
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public static IConfiguration Configuration { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -61,6 +64,12 @@ namespace BokuNoGame
             });
 
             services.AddAuthorization();
+
+            #region Интеграция
+            services.AddTransient<IntegrationJobFactory>();
+            services.AddScoped<SteamIntegrationJob>();
+            services.AddScoped<IBaseIntegrationService, SteamIntegratonService>();
+            #endregion
 
         }
 
