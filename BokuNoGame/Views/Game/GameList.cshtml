@@ -1,16 +1,78 @@
 ﻿@model BokuNoGame.ViewModels.GameListViewModel
+@inject AppDBContext context
 <div>
-    <ul class="list-group">
-        @foreach (var game in Model.Games)
-        {
-        <li class="list-group-item btn btn-outline-light">
-            <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id">
-                <div>
-                    <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="80" height="80" />
-                    <div>@game.Name</div>
-                </div>
-            </a>
-        </li>
-        }
-    </ul>
+    <div>
+        <ul class="list-group">
+            @foreach (var game in context.GetFilteredGameList(Model?.Filter))
+            {
+                <li class="list-group-item btn btn-outline-light">
+                    <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id">
+                        <div>
+                            <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="80" height="80" />
+                            <div>@game.Name</div>
+                        </div>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+    <div>
+        <aside>
+            <form asp-controller="Game" asp-action="GameList" method="post">
+                <div class="form-group">
+                    <div class="form-control">
+                        <label asp-for="Filter.Name">Название</label>
+                        <input type="text" asp-for="Filter.Name" />
+                        <span asp-validation-for="Filter.Name" />
+                    </div>
+                    <div class="form-control">
+                        <label asp-for="Filter.Genre">Жанр</label>
+                        <select asp-for="Filter.Genre" asp-items="@Html.GetEnumSelectList<Genre>()">
+                            <option selected value="7"></option>
+                        </select>
+                        <span asp-validation-for="Filter.Genre" />
+                    </div>
+                    <div class="form-control">
+                        <label asp-for="Filter.Publisher">Издатель</label>
+                        <select asp-for="Filter.Publisher" asp-items="@ViewBag.Publishers">
+                            <option selected disabled>Выберите издателя</option>
+                        </select>
+                        <span asp-validation-for="Filter.Publisher" />
+                    </div>
+                    <div class="form-control">
+                        <label asp-for="Filter.Developer">Разработчик</label>
+                        <select asp-for="Filter.Developer" asp-items="@ViewBag.Developers">
+                            <option selected disabled>Выберите разработчика</option>
+                        </select>
+                        <span asp-validation-for="Filter.Developer" />
+                    </div>
+                    <div class="form-control">
+                        Дата выхода с
+                        <select asp-for="Filter.ReleaseYearStart" asp-items="@ViewBag.StartYears">
+                            <option selected disabled>Год выхода</option>
+                        </select>
+                        <span asp-validation-for="Filter.ReleaseYearStart" />
+                        по
+                        <select asp-for="Filter.ReleaseYearEnd" asp-items="@ViewBag.EndYears">
+                            <option selected disabled>Год выхода</option>
+                        </select>
+                        <span asp-validation-for="Filter.ReleaseYearEnd" />
+                    </div>
+                    <div class="form-control">
+                        <label asp-for="Filter.Rating">Средний рейтинг</label>
+                        <input type="range" min="0" max="10" asp-for="Filter.Rating" />
+                        <span asp-validation-for="Filter.Rating" />
+                    </div>
+                    <div class="form-control">
+                        <label asp-for="Filter.AgeRating">Возрастной рейтинг</label>
+                        <select asp-for="Filter.AgeRating" asp-items="@ViewBag.AgeRatings">
+                            <option selected disabled>Выберите возрастной рейтинг</option>
+                        </select>
+                        <span asp-validation-for="Filter.AgeRating" />
+                    </div>
+                        <input type="submit" value="Применить" class="btn-success" />
+                    </div>
+</form>
+        </aside>
+    </div>
 </div>

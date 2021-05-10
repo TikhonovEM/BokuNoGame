@@ -19,6 +19,10 @@ namespace BokuNoGame.Models
         [Display(Name = "Головоломка")]
         Puzzle,
         [Display(Name = "Аркада")]
-        Arcade
+        Arcade,
+        [Display(Name = "Гонки")]
+        Race,
+        [Display(Name = "Любой")]
+        Default
     }
 }

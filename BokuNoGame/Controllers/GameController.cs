@@ -1,4 +1,5 @@
 ﻿using BokuNoGame.Extensions;
+using BokuNoGame.Filters;
 using BokuNoGame.Models;
 using BokuNoGame.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,12 +26,39 @@ namespace BokuNoGame.Controllers
             _context = context;
             _userManager = userManager;
         }
-        public IActionResult GameList(string likeName)
+
+        public IActionResult Search()
         {
-            var games = _context.Games.Where(g => g.Name.Contains(likeName)).ToList();
-            if (games.Count == 1)
-                return RedirectToAction("Game", new { gameId = games[0].Id });
-            return View(new GameListViewModel { Games = games });
+            return RedirectToAction("GameList");
+        }
+
+        [HttpGet]
+        public IActionResult GameList()
+        {
+            ViewBag.Publishers = new SelectList(_context.Games.Select(g => g.Publisher).Distinct());
+            ViewBag.Developers = new SelectList(_context.Games.Select(g => g.Developer).Distinct());
+            ViewBag.StartYears = new SelectList(Enumerable.Range(1900, DateTime.Now.Year - 1899));
+            ViewBag.EndYears = new SelectList(Enumerable.Range(1900, DateTime.Now.Year - 1899));
+            ViewBag.AgeRatings = new SelectList(_context.Games.Select(g => g.AgeRating).Distinct());
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult GameList(GameListViewModel model)
+        {
+            var games = _context.Games.AsQueryable();
+
+            ViewBag.Publishers = new SelectList(_context.Games.Select(g => g.Publisher).Distinct());
+            ViewBag.Developers = new SelectList(_context.Games.Select(g => g.Developer).Distinct());
+            ViewBag.StartYears = new SelectList(Enumerable.Range(1900, DateTime.Now.Year - 1899));
+            ViewBag.EndYears = new SelectList(Enumerable.Range(1900, DateTime.Now.Year - 1899));
+            ViewBag.AgeRatings = new SelectList(_context.Games.Select(g => g.AgeRating).Distinct());
+
+            if (games.Count() == 1)
+                return RedirectToAction("Game", new { gameId = games.First().Id });
+
+            return View(model);
         }
 
         public async Task<IActionResult> Game(int gameId)
@@ -89,6 +118,21 @@ namespace BokuNoGame.Controllers
                 return Ok();
             }
             return RedirectToAction("Profile", "Account");
+        }
+
+        public async Task<IActionResult> CreateGameReview(int gameId, string text)
+        {
+            var review = new Review
+            {
+                Text = text,
+                GameId = gameId,
+                UserId = _userManager.GetUserId(User),
+                Date = DateTime.Now,
+                IsApproved = false
+            };
+            await _context.Reviews.AddAsync(review);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Game", new { gameId });
         }
     }
 }

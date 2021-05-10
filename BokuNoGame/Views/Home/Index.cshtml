@@ -14,6 +14,9 @@
             </div>
         </div>        
     </form>
+    <form asp-controller="Game" asp-action="Search" method="post">
+        <input type="submit" value="Расширенный поиск"/>
+    </form>
     <div>
         <ul class="list-inline">
             @foreach(var game in context.GetTopMostPopularGames(5))

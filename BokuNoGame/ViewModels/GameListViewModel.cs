@@ -1,4 +1,5 @@
-﻿using BokuNoGame.Models;
+﻿using BokuNoGame.Filters;
+using BokuNoGame.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,6 @@ namespace BokuNoGame.ViewModels
 {
     public class GameListViewModel
     {
-        public List<Game> Games { get; set; }
+        public FilterPanel Filter { get; set; }
     }
 }

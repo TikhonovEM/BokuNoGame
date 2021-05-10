@@ -8,6 +8,7 @@ using Steam.Models.SteamStore;
 using SteamWebAPI2.Utilities;
 using SteamWebAPI2.Interfaces;
 using BokuNoGame.Models;
+using System.Net;
 
 namespace BokuNoGame.IntegrationServices
 {
@@ -55,26 +56,82 @@ namespace BokuNoGame.IntegrationServices
                 {
                     appDetails = await steamStoreInterface.GetStoreAppDetailsAsync(app.AppId, lang);
                 }
+                catch(NullReferenceException)
+                {
+                    _logger.LogError("Не удалось получить информацию о приложении {0}({1})", app.Name, app.AppId);
+                    continue;
+                }
                 catch(Exception e)
                 {
-                    _logger.LogError(e, "Не удалось получить информацию о приложении");
+                    _logger.LogError(e, "Произошла непредвиденная ошибка: ");
                     continue;
                 }
                 // Skip DLC
-                if (!appDetails.Categories.Any(c => c.Id == 21))
+                if (appDetails.Type.Equals("game"))
                 {
                     AppDetails.Add(appDetails);
                     if (isMaxSizeExists && AppDetails.Count >= appsCount)
                         break;
                 }
             }
-
-            _logger.LogInformation($"Found next apps: {string.Join("$$", AppDetails.Select(a => a.Name))}");
         }
 
         public async Task SaveChangesAsync()
         {
-            _logger.LogInformation("закончили интеграцию");
+            _logger.LogInformation("Start migration to DB");
+            foreach (var appDetail in AppDetails)
+            {
+                try
+                {
+                    var game = new Game();
+                    game.Name = appDetail.Name;
+                    game.Description = appDetail.DetailedDescription;
+                    game.Publisher = appDetail.Publishers.FirstOrDefault();
+                    game.Developer = appDetail.Developers.FirstOrDefault();
+                    var genres = appDetail.Genres;
+                    var genreValue = Genre.Default;
+                    foreach (var genre in genres)
+                    {
+                        // Поиск первого подходящего жанра.
+                        genreValue = genre.Description switch
+                        {
+                            "Экшены" => Genre.Action,
+                            "Симуляторы" => Genre.Simulation,
+                            "Стратегии" => Genre.Strategy,
+                            "Ролевые игры" => Genre.RPG,
+                            "Головоломки" => Genre.Puzzle,
+                            "Казуальные игры" => Genre.Arcade,
+                            "Гонки" => Genre.Race,
+                            _ => Genre.Default
+                        };
+                        if (genreValue != Genre.Default)
+                            break;
+                    }
+                    game.Genre = genreValue;
+                    game.ReleaseDate = Convert.ToDateTime(appDetail.ReleaseDate.Date);
+                    game.AgeRating = appDetail.RequiredAge.ToString();
+                    using (var webclient = new WebClient())
+                    {
+                        game.Logo = webclient.DownloadData(appDetail.HeaderImage);
+                    }
+                    await _appDBContext.Games.AddAsync(game);
+                    await _appDBContext.SaveChangesAsync();
+                    _logger.LogInformation($"Created game(Id = {game.Name})");
+
+                    var integrationInfo = new IntegrationInfo();
+                    integrationInfo.ExternalSystemDescriptor = ExternalSystemDescriptor;
+                    integrationInfo.ExternalGameId = Convert.ToInt32(appDetail.SteamAppId);
+                    integrationInfo.InternalGameId = game.Id;
+                    integrationInfo.Date = DateTime.Now;
+                    await _appDBContext.IntegrationInfos.AddAsync(integrationInfo);
+                    await _appDBContext.SaveChangesAsync();
+                    _logger.LogInformation($"Created integration info(Id = {integrationInfo.InternalGameId})");
+                }
+                catch(Exception e)
+                {
+                    _logger.LogError(e, "Произошла ошибка при миграции в БД");
+                }
+            }
         }
     }
 }

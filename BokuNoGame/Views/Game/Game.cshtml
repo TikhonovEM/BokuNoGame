@@ -1,6 +1,7 @@
 ﻿@model GameViewModel
 @inject AppDBContext context
 @inject Microsoft.AspNetCore.Identity.SignInManager<User> signInManager
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 <section>
     <div>
         <header>
@@ -50,6 +51,35 @@
                     </div>
                 </form>
             }
+        </div>
+    </section>
+
+    <section>
+        <div>
+            <form asp-controller="Game" asp-action="CreateGameReview" asp-route-gameId="@Model.Game.Id" method="post">
+                <div class="form-group">
+                    <textarea placeholder="Введите текст отзыва..." name="text" rows="4" cols="100"></textarea>
+                    <input class="btn btn-outline-success" type="submit" value="Добавить отзыв" />
+                </div>
+            </form>
+            <ul>
+                @foreach(var review in context.Reviews)
+                {
+                    <li>
+                        <div>
+                            <span>
+                                @userManager.FindByIdAsync(review.UserId).GetAwaiter().GetResult().UserName
+                            </span>
+                            <span>
+                                @review.Date.ToString("g")
+                            </span>
+                            <div>
+                                @review.Text
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
         </div>
     </section>
 }
