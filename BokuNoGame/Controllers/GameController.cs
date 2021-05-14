@@ -33,7 +33,7 @@ namespace BokuNoGame.Controllers
         }
 
         [HttpGet]
-        public IActionResult GameList()
+        public IActionResult GameList(int page = 1)
         {
             ViewBag.Publishers = new SelectList(_context.Games.Select(g => g.Publisher).Distinct());
             ViewBag.Developers = new SelectList(_context.Games.Select(g => g.Developer).Distinct());
@@ -41,13 +41,20 @@ namespace BokuNoGame.Controllers
             ViewBag.EndYears = new SelectList(Enumerable.Range(1900, DateTime.Now.Year - 1899));
             ViewBag.AgeRatings = new SelectList(_context.Games.Select(g => g.AgeRating).Distinct());
 
-            return View();
+            var pageSize = 30;
+            var gameListViewModel = new GameListViewModel();
+            gameListViewModel.Filter = new FilterPanel();
+            var games = _context.GetFilteredGameList(null);
+            var count = games.Count();
+            gameListViewModel.Games = games.Skip((page - 1) * pageSize).Take(pageSize).ToList();            
+            gameListViewModel.PageViewModel = new PageViewModel(count, page, 30);
+
+            return View(gameListViewModel);
         }
 
         [HttpPost]
-        public IActionResult GameList(GameListViewModel model)
+        public IActionResult GameList(GameListViewModel model, int page = 1)
         {
-            var games = _context.Games.AsQueryable();
 
             ViewBag.Publishers = new SelectList(_context.Games.Select(g => g.Publisher).Distinct());
             ViewBag.Developers = new SelectList(_context.Games.Select(g => g.Developer).Distinct());
@@ -55,8 +62,11 @@ namespace BokuNoGame.Controllers
             ViewBag.EndYears = new SelectList(Enumerable.Range(1900, DateTime.Now.Year - 1899));
             ViewBag.AgeRatings = new SelectList(_context.Games.Select(g => g.AgeRating).Distinct());
 
-            if (games.Count() == 1)
-                return RedirectToAction("Game", new { gameId = games.First().Id });
+            var pageSize = 30;
+            var games = _context.GetFilteredGameList(model.Filter);
+            var count = games.Count();
+            model.Games = games.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            model.PageViewModel = new PageViewModel(count, page, 30);
 
             return View(model);
         }

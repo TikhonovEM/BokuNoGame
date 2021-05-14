@@ -49,11 +49,11 @@ namespace BokuNoGame.Models
                 .ToList();
         }
 
-        public List<Game> GetFilteredGameList(FilterPanel filter)
+        public IQueryable<Game> GetFilteredGameList(FilterPanel filter)
         {
             var games = Games.AsNoTracking();
             if (filter == null)
-                return games.ToList();
+                return games;
 
             if (!string.IsNullOrEmpty(filter.Name))
                 games = games.Where(g => g.Name.Contains(filter.Name));
@@ -84,7 +84,7 @@ namespace BokuNoGame.Models
                 games = games.Where(g => g.AgeRating.Equals(filter.AgeRating));
 
 
-            return games.ToList();
+            return games;
         }
 
     }

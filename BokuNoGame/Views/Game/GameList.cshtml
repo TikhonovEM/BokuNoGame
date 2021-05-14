@@ -29,7 +29,7 @@
 <div>
     <div>
         <ul class="list-group">
-            @foreach (var game in context.GetFilteredGameList(Model?.Filter))
+            @foreach (var game in Model.Games)
             {
                 <li class="list-group-item btn btn-outline-light">
                     <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id">
@@ -41,6 +41,26 @@
                 </li>
             }
         </ul>
+        @if (Model.PageViewModel.HasPreviousPage)
+        {
+            <a asp-action="GameList"
+               asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
+               asp-route-model="@Model" 
+               class="btn btn-outline-dark">
+                <i class="glyphicon glyphicon-chevron-left"></i>
+                Назад
+            </a>
+        }
+        @if (Model.PageViewModel.HasNextPage)
+        {
+            <a asp-action="GameList"
+               asp-route-page="@(Model.PageViewModel.PageNumber + 1)" 
+               asp-route-model="@Model" 
+               class="btn btn-outline-dark">
+                Вперед
+                <i class="glyphicon glyphicon-chevron-right"></i>
+            </a>
+        }
     </div>
     <div>
         <aside>
@@ -54,7 +74,7 @@
                     <div class="form-control">
                         <label asp-for="Filter.Genre">Жанр</label>
                         <select asp-for="Filter.Genre" asp-items="@Html.GetEnumSelectList<Genre>()">
-                            <option selected value="6"></option>
+                            <option selected value="@Model.Filter.Genre"></option>
                         </select>
                         <span asp-validation-for="Filter.Genre" />
                     </div>
