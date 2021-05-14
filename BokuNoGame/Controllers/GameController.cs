@@ -61,6 +61,15 @@ namespace BokuNoGame.Controllers
             return View(model);
         }
 
+        public IActionResult GameByName(string likeName)
+        {
+            var games = _context.Games.Where(g => g.Name.Contains(likeName));
+            if (games.Count() == 1)
+                return RedirectToAction("Game", new { gameId = games.First().Id });
+
+            return RedirectToAction("GameList");
+        }
+
         public async Task<IActionResult> Game(int gameId)
         {
             ViewBag.Catalogs = new SelectList(_context.Catalogs, "Id", "Name");

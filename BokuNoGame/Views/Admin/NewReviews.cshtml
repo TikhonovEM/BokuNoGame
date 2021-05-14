@@ -1,0 +1,18 @@
+﻿@inject AppDBContext context
+
+<div class="list-group">
+    @foreach(var review in context.GetReviews())
+    {
+        <div class="list-group-item">
+            <p>
+                @review.Text
+            </p>
+            <a class="btn btn-success" asp-area="" asp-controller="Admin" asp-action="ApproveReview" asp-route-reviewId="@review.Id">
+                Опубликовать
+            </a>
+            <a class="btn btn-warning" asp-area="" asp-controller="Admin" asp-action="DeleteReview" asp-route-reviewId="@review.Id">
+                Удалить
+            </a>
+        </div>
+    }
+</div>

@@ -63,7 +63,7 @@
                 </div>
             </form>
             <ul>
-                @foreach(var review in context.Reviews)
+                @foreach(var review in context.GetGameReviews(Model.Game.Id, true))
                 {
                     <li>
                         <div>

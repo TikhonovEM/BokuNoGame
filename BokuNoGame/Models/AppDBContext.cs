@@ -1,4 +1,5 @@
 ﻿using BokuNoGame.Filters;
+using BokuNoGame.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -21,28 +22,38 @@ namespace BokuNoGame.Models
         public DbSet<IntegrationInfo> IntegrationInfos { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
-        public IQueryable<Game> GetTopMostPopularGames(int top)
+        public List<Game> GetTopMostPopularGames(int top)
         {
             return Games
                 .OrderByDescending(g => GameSummaries.Where(gs => gs.GameId == g.Id && gs.CatalogId == 2).Count())
-                .Take(top);
+                .Take(top)
+                .ToList();
         }
 
         public IQueryable<GameSummary> GetGameSummaries(string userId)
         {
-            return GameSummaries.Where(gs => gs.UserId.Equals(userId));
+            return GameSummaries
+                .Where(gs => gs.UserId.Equals(userId));
         }
 
-        public IQueryable<Review> GetGameReviews(int gameId)
+        public List<Review> GetGameReviews(int gameId, bool isApproved)
         {
-            return Reviews.Where(r => r.GameId == gameId);
+            return Reviews
+                .Where(r => r.GameId == gameId && r.IsApproved == isApproved)
+                .ToList();
+        }
+        public List<Review> GetReviews()
+        {
+            return Reviews
+                .Where(r => !r.IsApproved)
+                .ToList();
         }
 
-        public IQueryable<Game> GetFilteredGameList(FilterPanel filter)
+        public List<Game> GetFilteredGameList(FilterPanel filter)
         {
-            var games = Games.AsQueryable();
+            var games = Games.AsNoTracking();
             if (filter == null)
-                return games;
+                return games.ToList();
 
             if (!string.IsNullOrEmpty(filter.Name))
                 games = games.Where(g => g.Name.Contains(filter.Name));
@@ -72,7 +83,9 @@ namespace BokuNoGame.Models
             if (!string.IsNullOrEmpty(filter.AgeRating))
                 games = games.Where(g => g.AgeRating.Equals(filter.AgeRating));
 
-            return games;
+
+            return games.ToList();
         }
+
     }
 }

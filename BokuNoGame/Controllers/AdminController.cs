@@ -20,7 +20,7 @@ namespace BokuNoGame.Controllers
             _context = context;
         }
 
-
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult CreateGame()
         {
@@ -52,6 +52,28 @@ namespace BokuNoGame.Controllers
             await _context.Games.AddAsync(model.Game);
             await _context.SaveChangesAsync();
             return RedirectToAction("Administrate", "Account");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult NewReviews()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> ApproveReview(int reviewId)
+        {
+            var review = await _context.Reviews.FindAsync(reviewId);
+            review.IsApproved = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction("NewReviews");
+        }
+
+        public async Task<IActionResult> DeleteReview(int reviewId)
+        {
+            var review = await _context.Reviews.FindAsync(reviewId);
+            _context.Reviews.Remove(review);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("NewReviews");
         }
     }
 }

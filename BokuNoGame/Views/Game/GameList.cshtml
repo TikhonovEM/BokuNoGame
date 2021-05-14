@@ -1,5 +1,31 @@
 ﻿@model BokuNoGame.ViewModels.GameListViewModel
 @inject AppDBContext context
+<style>
+    @@font-face {
+        font-family: 'FontAwesome';
+        src: url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.woff2') format('woff2'), url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/fonts/fontawesome-webfont.woff') format('woff'), url('https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/fonts/fontawesome-webfont.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal
+    }
+
+    .glyphicon {
+        display: inline-block;
+        font: normal normal normal 14px/1 FontAwesome;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale
+    }
+
+    .glyphicon-chevron-right:before {
+        content: "\f054";
+    }
+
+    .glyphicon-chevron-left:before {
+        content: "\f053";
+    }
+</style>
+
 <div>
     <div>
         <ul class="list-group">
@@ -28,7 +54,7 @@
                     <div class="form-control">
                         <label asp-for="Filter.Genre">Жанр</label>
                         <select asp-for="Filter.Genre" asp-items="@Html.GetEnumSelectList<Genre>()">
-                            <option selected value="7"></option>
+                            <option selected value="6"></option>
                         </select>
                         <span asp-validation-for="Filter.Genre" />
                     </div>
@@ -60,7 +86,7 @@
                     </div>
                     <div class="form-control">
                         <label asp-for="Filter.Rating">Средний рейтинг</label>
-                        <input type="range" min="0" max="10" asp-for="Filter.Rating" />
+                        <input type="range" min="0" max="10" value="0" asp-for="Filter.Rating" />
                         <span asp-validation-for="Filter.Rating" />
                     </div>
                     <div class="form-control">
@@ -72,7 +98,7 @@
                     </div>
                         <input type="submit" value="Применить" class="btn-success" />
                     </div>
-</form>
+            </form>
         </aside>
     </div>
 </div>
