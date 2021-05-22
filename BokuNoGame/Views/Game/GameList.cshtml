@@ -26,8 +26,8 @@
     }
 </style>
 
-<div>
-    <div>
+<div class="row">
+    <div class="col-md-8 order-md-1">
         <ul class="list-group">
             @foreach (var game in Model.Games)
             {
@@ -62,8 +62,8 @@
             </a>
         }
     </div>
-    <div>
-        <aside>
+    <div class="col-md-4 order-md-2">
+        <div class="sticky-top">
             <form asp-controller="Game" asp-action="GameList" method="post">
                 <div class="form-group">
                     <div class="form-control">
@@ -119,6 +119,6 @@
                         <input type="submit" value="Применить" class="btn-success" />
                     </div>
             </form>
-        </aside>
+        </div>
     </div>
 </div>
