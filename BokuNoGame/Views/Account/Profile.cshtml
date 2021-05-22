@@ -9,8 +9,154 @@
     <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js"></script>
 }
-<div class="container">
-    Это профиль пользователя @Model.User.UserName
+<div class="container emp-profile">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="profile-img">
+                <img src="data:image;base64,@Convert.ToBase64String(Model.User.Photo)" width="100" height="100" alt="" />
+                <form asp-controller="Account" asp-action="LoadPhoto" enctype="multipart/form-data" method="post">
+                    <div class="file">
+                        <input type="file" id="file" name="file" />
+                        <input type="submit" value="Изменить фото" />
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="profile-head">
+                <h5>
+                    @Model.User.Nickname
+                </h5>
+                <h6>
+                    Игрофил
+                </h6>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Основная информация</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Дополнительно</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Изменить профиль
+            </button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Данные профиля</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form asp-action="EditProfile" asp-route-user="@Model" method="post">
+                            <div class="modal-body">
+                                <div class="form-group row">
+                                    <label asp-for="@Model.User.Nickname" class="col-sm-4 col-form-label">Никнейм</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" asp-for="@Model.User.Nickname" size="35" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="@Model.User.FullName" class="col-sm-4 col-form-label">Полное имя</label>
+                                    <div class="col-sm-3">
+                                        <input type="text" asp-for="@Model.User.FullName" size="35" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="@Model.User.Email" class="col-sm-4 col-form-label">Email</label>
+                                    <div class="col-sm-3">
+                                        <input type="email" asp-for="@Model.User.Email" size="35" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="@Model.User.BirthDate" class="col-sm-4 col-form-label">Дата рождения</label>
+                                    <div class="col-sm-3">
+                                        <input type="date" asp-for="@Model.User.BirthDate" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                <input type="submit" class="btn btn-primary" value="Обновить"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8 offset-md-4">
+            <div class="tab-content profile-tab" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>User Id</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>@Model.User.UserName</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Полное имя</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>@Model.User.FullName </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Email</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>@Model.User.Email</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Дата рождения</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>@Model.User.BirthDate.ToShortDateString()</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>С нами с </label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>@Model.User.RegistrationDate</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Игр в библиотеке</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>@Model.GameSummaries.Count()</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Оставлено отзывов</label>
+                        </div>
+                        <div class="col-md-6">
+                            <p>230</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <br />
     <select id="catalogsList" asp-items="ViewBag.Catalogs" onchange="ReloadCatalog()"></select>
     <div style="width:90%; margin:0 auto;">

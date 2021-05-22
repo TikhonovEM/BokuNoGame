@@ -13,6 +13,8 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace RolesApp.Controllers
 {
@@ -170,6 +172,39 @@ namespace RolesApp.Controllers
             {
                 throw;
             }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> LoadPhoto(IFormFile file)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (file != null)
+            {
+                using (var reader = new BinaryReader(file.OpenReadStream()))
+                {
+                    user.Photo = reader.ReadBytes((int)file.Length);
+                }
+
+                await _userManager.UpdateAsync(user);
+            }
+            var model = new ProfileViewModel();
+            model.User = user;
+            model.GameSummaries = _dbContext.GetGameSummaries(model.User.Id);
+            ViewBag.Catalogs = new SelectList(_dbContext.Catalogs, "Id", "Name");
+            return RedirectToAction("Profile", new { model });
+        }
+
+        public async Task<IActionResult> EditProfile(ProfileViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);     
+            user.Nickname = model.User.Nickname ?? user.Nickname;
+            user.FullName = model.User.FullName ?? user.FullName;
+            user.Email = model.User.Email ?? user.Email;
+            user.BirthDate = model.User.BirthDate;
+            model.User = user;
+            await _userManager.UpdateAsync(model.User);
+            return RedirectToAction("Profile", new { model });
         }
     }
 }

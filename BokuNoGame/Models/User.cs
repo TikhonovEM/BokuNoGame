@@ -8,8 +8,10 @@ namespace BokuNoGame.Models
 {
     public class User : IdentityUser
     {
-        public string Login { get; set; }
+        public string Nickname { get; set; }
         public string FullName { get; set; }
         public DateTime BirthDate { get; set; }
+        public DateTime RegistrationDate { get; set; }
+        public byte[] Photo { get; set; }
     }
 }
