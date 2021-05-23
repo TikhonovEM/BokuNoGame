@@ -30,7 +30,21 @@ namespace BokuNoGame.Controllers
             return View();
         }
 
-
+        public async Task<IActionResult> CreateNews(string title, string text, string reference, bool isLocal)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var news = new News
+            {
+                AuthorId = user.Id,
+                Title = title,
+                Text = text,
+                Reference = reference,
+                IsLocal = isLocal
+            };
+            await _context.News.AddAsync(news);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

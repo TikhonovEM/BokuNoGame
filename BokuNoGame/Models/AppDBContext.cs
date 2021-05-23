@@ -21,6 +21,7 @@ namespace BokuNoGame.Models
         public DbSet<GameSummary> GameSummaries { get; set; }
         public DbSet<IntegrationInfo> IntegrationInfos { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<News> News { get; set; }
 
         public List<Game> GetTopMostPopularGames(int top)
         {
