@@ -64,60 +64,96 @@
     </div>
     <div class="col-md-4 order-md-2">
         <div class="sticky-top">
-            <form asp-controller="Game" asp-action="GameList" method="post">
-                <div class="form-group">
-                    <div class="form-control">
-                        <label asp-for="Filter.Name">Название</label>
-                        <input type="text" asp-for="Filter.Name" />
-                        <span asp-validation-for="Filter.Name" />
+            <form class="card" asp-controller="Game" asp-action="GameList" method="post">
+                <div class="card-header">
+                    Панель фильтрации
+                </div>
+                <div class="card-body">
+                    <div class="form-group list-group-item">
+                        <div class="row">
+                            <label class="col-md-3 control-label" asp-for="Filter.Name">Название</label>
+                            <div class="col-md-3">
+                                <input type="text" asp-for="Filter.Name" />
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-control">
-                        <label asp-for="Filter.Genre">Жанр</label>
-                        <select asp-for="Filter.Genre" asp-items="@Html.GetEnumSelectList<Genre>()">
-                            <option selected value="@Model.Filter.Genre"></option>
-                        </select>
-                        <span asp-validation-for="Filter.Genre" />
+                    <div class="w-100 d-none d-md-block"></div>
+                    <div class="form-group list-group-item">
+                        <div class="row">
+                            <label class="col-md-3 control-label" asp-for="Filter.Genre">Жанр</label>
+                            <div class="col-md-3">
+                                <select asp-for="Filter.Genre" asp-items="@Html.GetEnumSelectList<Genre>()">
+                                    <option selected value="@Model.Filter.Genre"></option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-control">
-                        <label asp-for="Filter.Publisher">Издатель</label>
-                        <select asp-for="Filter.Publisher" asp-items="@ViewBag.Publishers">
-                            <option selected disabled>Выберите издателя</option>
-                        </select>
-                        <span asp-validation-for="Filter.Publisher" />
+                    <div class="w-100 d-none d-md-block"></div>
+                    <div class="form-group list-group-item">
+                        <div class="row">
+                            <label class="col-md-3 control-label" asp-for="Filter.Publisher">Издатель</label>
+                            <div class="col-md-3">
+                                <select asp-for="Filter.Publisher" asp-items="@ViewBag.Publishers">
+                                    <option selected disabled>Выберите издателя</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-control">
-                        <label asp-for="Filter.Developer">Разработчик</label>
-                        <select asp-for="Filter.Developer" asp-items="@ViewBag.Developers">
-                            <option selected disabled>Выберите разработчика</option>
-                        </select>
-                        <span asp-validation-for="Filter.Developer" />
+                    <div class="w-100 d-none d-md-block"></div>
+                    <div class="form-group list-group-item">
+                        <div class="row">
+                            <label class="col-md-3 control-label" asp-for="Filter.Developer">Разработчик</label>
+                            <div class="col-md-3">
+                                <select asp-for="Filter.Developer" asp-items="@ViewBag.Developers">
+                                    <option selected disabled>Выберите разработчика</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-control">
-                        Дата выхода с
-                        <select asp-for="Filter.ReleaseYearStart" asp-items="@ViewBag.StartYears">
-                            <option selected disabled>Год выхода</option>
-                        </select>
-                        <span asp-validation-for="Filter.ReleaseYearStart" />
-                        по
-                        <select asp-for="Filter.ReleaseYearEnd" asp-items="@ViewBag.EndYears">
-                            <option selected disabled>Год выхода</option>
-                        </select>
-                        <span asp-validation-for="Filter.ReleaseYearEnd" />
+                    <div class="w-100 d-none d-md-block"></div>
+                    <div class="form-group list-group-item">
+                        <div class="row">
+                            <span class="col-md-3">Дата выхода с </span>
+                            <div class="col-md-9">
+                                <select asp-for="Filter.ReleaseYearStart" asp-items="@ViewBag.StartYears">
+                                    <option selected disabled>Год выхода</option>
+                                </select>
+                                <span>по </span>
+                                <select asp-for="Filter.ReleaseYearEnd" asp-items="@ViewBag.EndYears">
+                                    <option selected disabled>Год выхода</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-control">
-                        <label asp-for="Filter.Rating">Средний рейтинг</label>
-                        <input type="range" min="0" max="10" value="0" asp-for="Filter.Rating" />
-                        <span asp-validation-for="Filter.Rating" />
+                    <div class="w-100 d-none d-md-block"></div>
+                    <div class="form-group list-group-item">
+                        <div class="row">
+                            <label class="col-md-3 control-label" asp-for="Filter.Rating">Средний рейтинг</label>
+                            <div class="col-md-3">
+                                <input type="range" min="0" max="10" value="0" asp-for="Filter.Rating" />
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-control">
-                        <label asp-for="Filter.AgeRating">Возрастной рейтинг</label>
-                        <select asp-for="Filter.AgeRating" asp-items="@ViewBag.AgeRatings">
-                            <option selected disabled>Выберите возрастной рейтинг</option>
-                        </select>
-                        <span asp-validation-for="Filter.AgeRating" />
+                    <div class="w-100 d-none d-md-block"></div>
+                    <div class="form-group list-group-item">
+                        <div class="row">
+                            <label class="col-md-3 control-label" asp-for="Filter.AgeRating">Возрастной рейтинг</label>
+                            <div class="col-md-3">
+                                <select asp-for="Filter.AgeRating" asp-items="@ViewBag.AgeRatings">
+                                    <option selected disabled>Выберите возрастной рейтинг</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                        <input type="submit" value="Применить" class="btn-success" />
+                </div>
+                <div class="w-100 d-none d-md-block"></div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input type="submit" value="Применить" class="btn btn-success" />
+                        </div>
                     </div>
+                </div>
             </form>
         </div>
     </div>

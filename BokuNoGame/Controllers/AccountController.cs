@@ -157,7 +157,7 @@ namespace RolesApp.Controllers
                 //Search  
                 if (!string.IsNullOrEmpty(searchValue))
                 {
-                    customerData = customerData.Where(m => m.GameName == searchValue);
+                    customerData = customerData.Where(m => m.GameName.Contains(searchValue));
                 }
 
                 //total number of rows count   
