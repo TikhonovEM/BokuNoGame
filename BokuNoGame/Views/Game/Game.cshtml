@@ -45,11 +45,11 @@
                 </div>
                 <div class="rating col-md-4">
                     <h4 class="bg-secondary"><b>Рейтинг:</b></h4>
-                    <div class="row">
+                    <div class="row" style="font-size:35px;">
                         <div class="col-md-5">
-                            <div class="game-rate" data-rate-value="@Model.Game.Rating" style="font-size:35px;"></div>
+                            <div class="game-rate" data-rate-value="@Model.Game.Rating"></div>
                         </div>
-                        <div class="col-md-7" style="font-size:35px;">@Model.Game.Rating</div>
+                        <div class="col-md-7">@Model.Game.Rating.ToString("F2")</div>
                     </div>
                 </div>
                 <div class="description row">
