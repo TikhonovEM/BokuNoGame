@@ -5,28 +5,30 @@
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 @inject Microsoft.AspNetCore.Identity.SignInManager<User> roleManager
 
-<div class="text-center">
-    <h1 class="display-4">Добро пожаловать в NGNL</h1>
-    <div>
-        <ul class="list-inline">
-            @foreach (var game in context.GetTopMostPopularGames(5))
-            {
-                <li class="list-inline-item btn-outline-light">
-                    <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id" class="social-icon text-center">
-                        <div>
-                            <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="80" height="80" />
-                            <p>@game.Name</p>
-                        </div>
-                    </a>
-                </li>
-            }
-        </ul>
+<div>
+    <div class="text-center">
+        <h1 class="display-4">Добро пожаловать в NGNL</h1>
+        <div>
+            <ul class="list-inline">
+                @foreach (var game in context.GetTopMostPopularGames(5))
+                {
+                    <li class="list-inline-item btn-outline-light">
+                        <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id" class="social-icon text-center">
+                            <div>
+                                <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="80" height="80" />
+                                <p>@game.Name</p>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-9 order-md-1">
             <section>
                 <div class="row">
-                    <h3 class="col-md-10">Новости игрового мира</h3>
+                    <h3 class="col-md-9 text-center">Новости игрового мира</h3>
                     <button type="button" class="btn btn-primary col-md-2" data-toggle="modal" data-target="#exampleModal">
                         Предложить новость
                     </button>
@@ -76,7 +78,7 @@
                             <article class="card">
                                 @if (string.IsNullOrEmpty(news.Reference))
                                 {
-                                    <h4 class="card-header">
+                                    <h4 class="card-header text-center">
                                         @news.Title
                                     </h4>
                                     <div class="card-body">
@@ -84,8 +86,8 @@
                                     </div>
                                     @if ((await userManager.FindByIdAsync(news.AuthorId)) != null)
                                     { 
-                                        <div class="card-footer">
-                                            От @(await userManager.FindByIdAsync(news.AuthorId))?.Nickname
+                                        <div class="card-footer text-muted">
+                                            От @((await userManager.FindByIdAsync(news.AuthorId))?.Nickname)
                                         </div>
                                     }
                                     else
