@@ -35,7 +35,7 @@ namespace BokuNoGame.Controllers
             var user = await _userManager.GetUserAsync(User);
             var news = new News
             {
-                AuthorId = user.Id,
+                AuthorId = user?.Id,
                 Title = title,
                 Text = text,
                 Reference = reference,

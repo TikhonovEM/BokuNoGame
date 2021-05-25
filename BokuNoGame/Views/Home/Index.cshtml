@@ -2,12 +2,14 @@
     ViewData["Title"] = "Главная";
 }
 @inject AppDBContext context
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+@inject Microsoft.AspNetCore.Identity.SignInManager<User> roleManager
 
 <div class="text-center">
     <h1 class="display-4">Добро пожаловать в NGNL</h1>
     <div>
         <ul class="list-inline">
-            @foreach(var game in context.GetTopMostPopularGames(5))
+            @foreach (var game in context.GetTopMostPopularGames(5))
             {
                 <li class="list-inline-item btn-outline-light">
                     <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id" class="social-icon text-center">
@@ -19,5 +21,91 @@
                 </li>
             }
         </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-9 order-md-1">
+            <section>
+                <div class="row">
+                    <h3 class="col-md-10">Новости игрового мира</h3>
+                    <button type="button" class="btn btn-primary col-md-2" data-toggle="modal" data-target="#exampleModal">
+                        Предложить новость
+                    </button>
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog mw-100 w-50" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Новая новость</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form asp-action="CreateNews" method="post">
+                                    <div class="modal-body">
+                                        <div class="form-group row">
+                                            <label for="title" class="col-sm-2 col-form-label">Заголовок</label>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" id="title" name="title" type="text" size="35" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="text" class="col-sm-2 col-form-label">Текст</label>
+                                            <div class="col-sm-10">
+                                                <textarea class="form-control" id="text" name="text" rows="5" cols="60"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <label for="reference" class="col-sm-2 col-form-label">Ссылка</label>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" id="reference" name="reference" type="text" size="35" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                        <input type="submit" class="btn btn-primary" value="Опубликовать" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="list-group">
+                    @foreach (var news in context.News.Where(n => !n.IsLocal))
+                    {
+                        <li class="list-group-item">
+                            <article class="card">
+                                @if (string.IsNullOrEmpty(news.Reference))
+                                {
+                                    <h4 class="card-header">
+                                        @news.Title
+                                    </h4>
+                                    <div class="card-body">
+                                        <p class="card-text">@news.Text</p>
+                                    </div>
+                                    @if ((await userManager.FindByIdAsync(news.AuthorId)) != null)
+                                    { 
+                                        <div class="card-footer">
+                                            От @(await userManager.FindByIdAsync(news.AuthorId))?.Nickname
+                                        </div>
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                                else
+                                {
+                                    <h4 class="card-header">
+                                        <a href="@news.Reference">
+                                            @news.Title
+                                        </a>
+                                    </h4>
+                                }
+                            </article>
+                        </li>
+                    }
+                </ul>
+            </section>
+        </div>
     </div>
 </div>
