@@ -2,68 +2,102 @@
 @inject AppDBContext context
 @inject Microsoft.AspNetCore.Identity.SignInManager<User> signInManager
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
-<section>
-    <div>
-        <header>
-            <h1>@Model.Game.Name</h1>
-        </header>
-        <div class="mainpage">
-            <div class="image">
-                <img src="data:image;base64,@System.Convert.ToBase64String(Model.Game.Logo)" width="150" height="200" />
-            </div>
-            <div class="info">
-                <div class="d-inline-block">
-                    <div>@Model.Game.Genre</div>
-                </div>
-                <div class="d-inline-block">
-                    <div>@Model.Game.Developer</div>
-                </div>
-                <div class="d-inline-block">
-                    <div>@Model.Game.Publisher</div>
-                </div>
-            </div>
-            <div class="description">
-                <p>@Model.Game.Description</p>
-            </div>
-        </div>
-    </div>
-</section>
-@if (signInManager.IsSignedIn(User))
-{
+@section Scripts{
+<script src="~/js/auxiliary-rater/rater.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var options = {
+            max_value: 5,
+            step_size: 0.01,
+            readonly: true
+        };
+        $(".game-rate").rate(options);
+    })
+</script> 
+ }
+<div class="container">
     <section>
         <div>
-            @if (Model.Catalog != null)
+            <header class="text-center mb-5">
+                <h1>@Model.Game.Name</h1>
+            </header>
+            <div class="main-page row">
+                <div class="image img-fluid col-md-4 mx-auto text-center">
+                    <img src="data:image;base64,@System.Convert.ToBase64String(Model.Game.Logo)" style="max-height:500px;max-width:400px;" />
+                </div>
+                <div class="info col-md-4">
+                    <h4 class="bg-secondary"><b>Информация:</b></h4>
+                    <div>
+                        <b>Жанр: </b><span>@Model.Game.Genre</span>
+                    </div>
+                    <div>
+                        <b>Разработчик: </b><span>@Model.Game.Developer</span>
+                    </div>
+                    <div>
+                        <b>Издатель: </b><span>@Model.Game.Publisher</span>
+                    </div>
+                    <div>
+                        <b>Возрастной рейтинг: </b><span>@Model.Game.AgeRating</span>
+                    </div>
+                    <div>
+                        <b>Дата выхода: </b><span>@Model.Game.ReleaseDate.ToShortDateString()</span>
+                    </div>
+                </div>
+                <div class="rating col-md-4">
+                    <h4 class="bg-secondary"><b>Рейтинг:</b></h4>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="game-rate" data-rate-value="@Model.Game.Rating" style="font-size:35px;"></div>
+                        </div>
+                        <div class="col-md-7" style="font-size:35px;">@Model.Game.Rating</div>
+                    </div>
+                </div>
+                <div class="description row">
+                    <div class="col-md-4">
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <section>
+                                <div>
+                                    @if (Model.Catalog != null)
+                                    {
+                                    <form class="form-inline text-center" asp-controller="Game" asp-action="UpdateGameInUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
+                                        <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control-sm mx-auto"></select>
+                                        <input class="btn btn-success mx-auto" type="submit" value="Обновить" />
+                                    </form>
+                                    }
+                                    else
+                                    {
+                                        <form class="form-inline text-center" asp-controller="Game" asp-action="AddGameToUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
+                                            <input type="hidden" name="game" value="@Model.Game" />
+                                            <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control-sm mx-auto"></select>
+                                            <input class="btn btn-success" type="submit" value="Добавить в список" />
+                                        </form>
+                                    }
+                                </div>
+                            </section>
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <h4 class="bg-secondary"><b>Описание:</b></h4>
+                        <p>@Model.Game.Description.ToHtmlString()</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>     
+    <section>
+        <div>
+            @if (signInManager.IsSignedIn(User))
             {
-                <form asp-controller="Game" asp-action="UpdateGameInUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
+                <form asp-controller="Game" asp-action="CreateGameReview" asp-route-gameId="@Model.Game.Id" method="post">
                     <div class="form-group">
-                        <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control"></select>
-                        <input class="btn btn-success" type="submit" value="Обновить" />
+                        <textarea placeholder="Введите текст отзыва..." name="text" rows="4" cols="100"></textarea>
+                        <input class="btn btn-outline-success" type="submit" value="Добавить отзыв" />
                     </div>
                 </form>
             }
-            else
-            {
-                <form asp-controller="Game" asp-action="AddGameToUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
-                    <div class="form-group">
-                        <input type="hidden" name="game" value="@Model.Game" />
-                        <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control"></select>
-                        <input class="btn btn-success" type="submit" value="Добавить в список" />
-                    </div>
-                </form>
-            }
-        </div>
-    </section>
-
-    <section>
-        <div>
-            <form asp-controller="Game" asp-action="CreateGameReview" asp-route-gameId="@Model.Game.Id" method="post">
-                <div class="form-group">
-                    <textarea placeholder="Введите текст отзыва..." name="text" rows="4" cols="100"></textarea>
-                    <input class="btn btn-outline-success" type="submit" value="Добавить отзыв" />
-                </div>
-            </form>
             <ul>
-                @foreach(var review in context.GetGameReviews(Model.Game.Id, true))
+                @foreach (var review in context.GetGameReviews(Model.Game.Id, true))
                 {
                     <li>
                         <div>
@@ -82,4 +116,4 @@
             </ul>
         </div>
     </section>
-}
+</div>
