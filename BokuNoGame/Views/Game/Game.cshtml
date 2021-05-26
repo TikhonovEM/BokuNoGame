@@ -3,21 +3,11 @@
 @inject Microsoft.AspNetCore.Identity.SignInManager<User> signInManager
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 @section Scripts{
-<script src="~/js/auxiliary-rater/rater.min.js"></script>
+<script src="~/js/rateit/scripts/jquery.rateit.min.js"></script>
 <script>
     $(document).ready(function () {
-        var options = {
-            max_value: 5,
-            step_size: 0.01,
-            readonly: true
-        };
-        $(".game-rate").rate(options);
-        var options2 = {
-            max_value: 5,
-            step_size: 0.5
-        };
-        $(".user-rate").rate(options2);
-        $(".user-rate").on("change", function (ev, data) {
+
+        $("#user-rateit").bind("rated", function (ev) {
             let url = '@Url.Content("~/")' + "Game/UpdateGameRate";
             let gameId = '@Model.Game.Id';
             let userId = '@userManager.GetUserId(User)';
@@ -25,10 +15,10 @@
                 {
                     gameId: gameId,
                     userId: userId,
-                    rate: data.to * 2
+                    rate: $(this).rateit('value') * 2
                 },
                 function (data) {
-                    $("#user-rate-value").text(data.rate.toFixed(2));
+                    $("#user-rate-value").text(data.rate);
                 });
         });
     })
@@ -64,11 +54,15 @@
                 </div>
                 <div class="rating col-md-4">
                     <h4 class="bg-secondary"><b>Рейтинг:</b></h4>
-                    <div class="row" style="font-size:35px;">
+                    <div class="row">
                         <div class="col-md-5">
-                            <div class="game-rate" data-rate-value="@context.GetGameAverageRating(Model.Game.Id)"></div>
+                            <div class="rateit ml-3 mt-1" 
+                                 data-rateit-value="@((context.GetGameAverageRating(Model.Game.Id) / 2).ToString(System.Globalization.CultureInfo.InvariantCulture))" 
+                                 data-rateit-step="0.01" 
+                                 data-rateit-readonly="true" 
+                                 data-rateit-mode="font" style="font-size:40px;"></div>
                         </div>
-                        <div class="col-md-7">@context.GetGameAverageRating(Model.Game.Id).ToString("F2")</div>
+                        <div class="col-md-7" style="font-size:35px;">@context.GetGameAverageRating(Model.Game.Id).ToString("F2")</div>
                     </div>
                 </div>
                 <div class="description row">
@@ -96,15 +90,20 @@
                             <div class="row" style="font-size:35px;">
                                 @if (context.GameRates.Any(gr => gr.GameId == Model.Game.Id && gr.AuthorId.Equals(userManager.GetUserId(User))))
                                 {
-                                    <div class="col-md-5">
-                                        <div class="user-rate" data-rate-value="@(context.GameRates.First(gr => gr.GameId == Model.Game.Id && gr.AuthorId.Equals(userManager.GetUserId(User))).Rate / 2)"></div>
-                                    </div>
+                                    <div id="user-rateit" class="rateit ml-3 mt-1 col-md-5"
+                                         data-rateit-value="@((context.GameRates.First(gr => gr.GameId == Model.Game.Id && gr.AuthorId.Equals(userManager.GetUserId(User))).Rate / (double)2).ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                                         data-rateit-step="0.5"
+                                         data-rateit-mode="font" 
+                                         data-rateit-resetable="false" style="font-size:40px;"></div>
                                     <div id="user-rate-value" class="col-md-7">@context.GameRates.First(gr => gr.GameId == Model.Game.Id && gr.AuthorId.Equals(userManager.GetUserId(User))).Rate</div>
                                 }
                                 else
                                 {
                                     <div class="col-md-5">
-                                        <div class="user-rate"></div>
+                                        <div id="user-rateit" class="rateit ml-3 mt-1" 
+                                             data-rateit-step="0.5"
+                                             data-rateit-mode="font" 
+                                             data-rateit-resetable="false" style="font-size:40px;"></div>
                                     </div>
                                     <div id="user-rate-value" class="col-md-7"></div>
                                 }
