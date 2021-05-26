@@ -12,6 +12,25 @@
             readonly: true
         };
         $(".game-rate").rate(options);
+        var options2 = {
+            max_value: 5,
+            step_size: 0.5
+        };
+        $(".user-rate").rate(options2);
+        $(".user-rate").on("change", function (ev, data) {
+            let url = '@Url.Content("~/")' + "Game/UpdateGameRate";
+            let gameId = '@Model.Game.Id';
+            let userId = '@userManager.GetUserId(User)';
+            $.post(url,
+                {
+                    gameId: gameId,
+                    userId: userId,
+                    rate: data.to * 2
+                },
+                function (data) {
+                    $("#user-rate-value").text(data.rate.toFixed(2));
+                });
+        });
     })
 </script> 
  }
@@ -47,34 +66,50 @@
                     <h4 class="bg-secondary"><b>Рейтинг:</b></h4>
                     <div class="row" style="font-size:35px;">
                         <div class="col-md-5">
-                            <div class="game-rate" data-rate-value="@Model.Game.Rating"></div>
+                            <div class="game-rate" data-rate-value="@context.GetGameAverageRating(Model.Game.Id)"></div>
                         </div>
-                        <div class="col-md-7">@Model.Game.Rating.ToString("F2")</div>
+                        <div class="col-md-7">@context.GetGameAverageRating(Model.Game.Id).ToString("F2")</div>
                     </div>
                 </div>
                 <div class="description row">
                     <div class="col-md-4">
                         @if (signInManager.IsSignedIn(User))
                         {
-                            <section>
-                                <div>
-                                    @if (Model.Catalog != null)
-                                    {
+                        <section>
+                            <div>
+                                @if (Model.Catalog != null)
+                                {
                                     <form class="form-inline text-center" asp-controller="Game" asp-action="UpdateGameInUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
                                         <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control-sm mx-auto"></select>
                                         <input class="btn btn-success mx-auto" type="submit" value="Обновить" />
                                     </form>
-                                    }
-                                    else
-                                    {
-                                        <form class="form-inline text-center" asp-controller="Game" asp-action="AddGameToUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
-                                            <input type="hidden" name="game" value="@Model.Game" />
-                                            <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control-sm mx-auto"></select>
-                                            <input class="btn btn-success" type="submit" value="Добавить в список" />
-                                        </form>
-                                    }
-                                </div>
-                            </section>
+                                }
+                                else
+                                {
+                                    <form class="form-inline text-center" asp-controller="Game" asp-action="AddGameToUserCatalog" asp-route-gameId="@Model.Game.Id" asp-antiforgery="true" method="post">
+                                        <input type="hidden" name="game" value="@Model.Game" />
+                                        <select id="catalogId" name="catalogId" asp-items="ViewBag.Catalogs" class="form-control-sm mx-auto"></select>
+                                        <input class="btn btn-success" type="submit" value="Добавить в список" />
+                                    </form>
+                                }
+                            </div>
+                            <div class="row" style="font-size:35px;">
+                                @if (context.GameRates.Any(gr => gr.GameId == Model.Game.Id && gr.AuthorId.Equals(userManager.GetUserId(User))))
+                                {
+                                    <div class="col-md-5">
+                                        <div class="user-rate" data-rate-value="@(context.GameRates.First(gr => gr.GameId == Model.Game.Id && gr.AuthorId.Equals(userManager.GetUserId(User))).Rate / 2)"></div>
+                                    </div>
+                                    <div id="user-rate-value" class="col-md-7">@context.GameRates.First(gr => gr.GameId == Model.Game.Id && gr.AuthorId.Equals(userManager.GetUserId(User))).Rate</div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-5">
+                                        <div class="user-rate"></div>
+                                    </div>
+                                    <div id="user-rate-value" class="col-md-7"></div>
+                                }
+                            </div>
+                        </section>
                         }
                     </div>
                     <div class="col-md-8">

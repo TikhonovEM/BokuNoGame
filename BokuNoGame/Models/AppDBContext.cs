@@ -22,6 +22,7 @@ namespace BokuNoGame.Models
         public DbSet<IntegrationInfo> IntegrationInfos { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<News> News { get; set; }
+        public DbSet<GameRate> GameRates { get; set; }
 
         public List<Game> GetTopMostPopularGames(int top)
         {
@@ -86,6 +87,16 @@ namespace BokuNoGame.Models
 
 
             return games;
+        }
+
+        public double GetGameAverageRating(int gameId)
+        {
+            var gameRates = GameRates.Where(gr => gr.GameId == gameId).ToList();
+            var rates = gameRates.Sum(gr => gr.Rate);
+            var count = gameRates.Count;
+            if (count == 0)
+                return 0.0;
+            return Math.Round(rates / (double)count, 2);
         }
 
     }

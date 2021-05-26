@@ -99,12 +99,13 @@ namespace BokuNoGame.Controllers
             var userId = _userManager.GetUserId(User);
             var game = await _context.Games.FindAsync(gameId);
             var catalog = await _context.Catalogs.FindAsync(catalogId);
+            var rate = _context.GameRates.Where(gr => gr.GameId == gameId && gr.AuthorId.Equals(userId)).FirstOrDefault()?.Rate;
             var summary = new GameSummary()
             {
                 GameName = game.Name,
                 Game = game,
                 GameId = game.Id,
-                Rate = null,
+                Rate = rate,
                 Genre = game.Genre,
                 GenreWrapper = game.Genre.GetAttribute<DisplayAttribute>().Name,
                 UserId = userId,
@@ -152,6 +153,32 @@ namespace BokuNoGame.Controllers
             await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
             return RedirectToAction("Game", new { gameId });
+        }
+
+        public async Task<IActionResult> UpdateGameRate(int gameId, string userId, int rate)
+        {
+            var gameRate = await _context.GameRates.Where(gr => gr.GameId == gameId && gr.AuthorId.Equals(userId)).FirstOrDefaultAsync();
+            if (gameRate == null)
+            {
+                gameRate = new GameRate()
+                {
+                    GameId = gameId,
+                    AuthorId = userId,
+                    Rate = rate
+                };
+                await _context.GameRates.AddAsync(gameRate);
+            }
+            else
+            {
+                gameRate.Rate = rate;
+            }
+            var gs = await _context.GameSummaries.Where(gs => gs.GameId == gameId && gs.UserId.Equals(userId)).FirstOrDefaultAsync();
+            if (gs != null)
+            {
+                gs.Rate = rate;
+            }
+            await _context.SaveChangesAsync();
+            return Json(new { rate });
         }
     }
 }
