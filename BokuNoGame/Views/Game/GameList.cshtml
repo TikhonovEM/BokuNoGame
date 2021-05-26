@@ -24,23 +24,30 @@
     .glyphicon-chevron-left:before {
         content: "\f053";
     }
+
+    .list-group-horizontal.repeat {
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr);
+    }
 </style>
 
 <div class="row">
     <div class="col-md-8 order-md-1">
-        <ul class="list-group">
-            @foreach (var game in Model.Games)
-            {
-                <li class="list-group-item btn btn-outline-light">
-                    <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id">
-                        <div>
-                            <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="80" height="80" />
-                            <div>@game.Name</div>
-                        </div>
-                    </a>
-                </li>
-            }
-        </ul>
+        <div class="row">
+            <ul class="list-group list-group-horizontal repeat">
+                @foreach (var game in Model.Games)
+                {
+                    <li class="list-group-item btn btn-outline-light">
+                        <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id">
+                            <div>
+                                <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="80" height="80" />
+                                <div>@game.Name</div>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
         @if (Model.PageViewModel.HasPreviousPage)
         {
             <a asp-action="GameList"
