@@ -33,7 +33,7 @@ namespace BokuNoGame.Controllers
         }
 
         [HttpGet]
-        public IActionResult GameList(int page = 1)
+        public IActionResult GameList(int page = 1, string likeName = null)
         {
             ViewBag.Publishers = new SelectList(_context.Games.Select(g => g.Publisher).Distinct());
             ViewBag.Developers = new SelectList(_context.Games.Select(g => g.Developer).Distinct());
@@ -44,7 +44,9 @@ namespace BokuNoGame.Controllers
             var pageSize = 30;
             var gameListViewModel = new GameListViewModel();
             gameListViewModel.Filter = new FilterPanel();
-            var games = _context.GetFilteredGameList(null);
+            if (likeName != null)
+                gameListViewModel.Filter.Name = likeName;
+            var games = _context.GetFilteredGameList(likeName != null ? gameListViewModel.Filter : null);
             var count = games.Count();
             gameListViewModel.Games = games.Skip((page - 1) * pageSize).Take(pageSize).ToList();            
             gameListViewModel.PageViewModel = new PageViewModel(count, page, 30);
@@ -77,7 +79,7 @@ namespace BokuNoGame.Controllers
             if (games.Count() == 1)
                 return RedirectToAction("Game", new { gameId = games.First().Id });
 
-            return RedirectToAction("GameList");
+            return RedirectToAction("GameList", new { likeName });
         }
 
         public async Task<IActionResult> Game(int gameId)
