@@ -8,6 +8,8 @@ namespace BokuNoGame.Models
 {
     public enum Genre
     {
+        [Display(Name = "Любой")]
+        Default,
         [Display(Name = "Экшен")]
         Action,
         [Display(Name = "Симулятор")]
@@ -21,8 +23,6 @@ namespace BokuNoGame.Models
         [Display(Name = "Аркада")]
         Arcade,
         [Display(Name = "Гонки")]
-        Race,
-        [Display(Name = "Любой")]
-        Default
+        Race
     }
 }

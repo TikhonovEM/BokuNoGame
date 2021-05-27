@@ -50,23 +50,39 @@
         </div>
         @if (Model.PageViewModel.HasPreviousPage)
         {
-            <a asp-action="GameList"
-               asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
-               asp-route-model="@Model" 
-               class="btn btn-outline-dark">
-                <i class="glyphicon glyphicon-chevron-left"></i>
-                Назад
-            </a>
+            <form class="form-inline" asp-action="GameList" method="post" style="float:left;">
+                <input type="hidden" name="page" value="@(Model.PageViewModel.PageNumber - 1)" />
+                <input type="hidden" asp-for="Filter.Name" />
+                <input type="hidden" asp-for="Filter.Genre" />
+                <input type="hidden" asp-for="Filter.Publisher" />
+                <input type="hidden" asp-for="Filter.Developer" />
+                <input type="hidden" asp-for="Filter.ReleaseYearStart" />
+                <input type="hidden" asp-for="Filter.ReleaseYearEnd" />
+                <input type="hidden" asp-for="Filter.Rating" />
+                <input type="hidden" asp-for="Filter.AgeRating" />             
+                <button class="btn btn-outline-dark">
+                    <i class="glyphicon glyphicon-chevron-left"></i>
+                    Назад
+                </button>
+            </form>
         }
         @if (Model.PageViewModel.HasNextPage)
         {
-            <a asp-action="GameList"
-               asp-route-page="@(Model.PageViewModel.PageNumber + 1)" 
-               asp-route-model="@Model" 
-               class="btn btn-outline-dark">
-                Вперед
-                <i class="glyphicon glyphicon-chevron-right"></i>
-            </a>
+            <form class="form-inline" asp-action="GameList" method="post" style="float:right;">
+                <input type="hidden" name="page" value="@(Model.PageViewModel.PageNumber + 1)" />
+                <input type="hidden" asp-for="Filter.Name" />
+                <input type="hidden" asp-for="Filter.Genre" />
+                <input type="hidden" asp-for="Filter.Publisher" />
+                <input type="hidden" asp-for="Filter.Developer" />
+                <input type="hidden" asp-for="Filter.ReleaseYearStart" />
+                <input type="hidden" asp-for="Filter.ReleaseYearEnd" />
+                <input type="hidden" asp-for="Filter.Rating" />
+                <input type="hidden" asp-for="Filter.AgeRating" />
+                <button class="btn btn-outline-dark">
+                    Вперед
+                    <i class="glyphicon glyphicon-chevron-right"></i>
+                </button>
+            </form>
         }
     </div>
     <div class="col-md-4 order-md-2">
