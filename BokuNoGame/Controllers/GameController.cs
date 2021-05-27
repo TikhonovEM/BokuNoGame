@@ -84,13 +84,18 @@ namespace BokuNoGame.Controllers
 
         public async Task<IActionResult> Game(int gameId)
         {
-            ViewBag.Catalogs = new SelectList(_context.Catalogs, "Id", "Name");
+            
 
             var game = _context.Games.Find(gameId);
             var user = await _userManager.GetUserAsync(User);
 
             Catalog catalog = user != null ? _context.GameSummaries.Include(gs => gs.Catalog).Include(gs => gs.Game)
                 .FirstOrDefault(gs => gs.UserId.Equals(user.Id) && gs.GameId == gameId)?.Catalog : null;
+
+            if (catalog != null)
+                ViewBag.Catalogs = new SelectList(_context.Catalogs, "Id", "Name", catalog.Id);
+            else
+                ViewBag.Catalogs = new SelectList(_context.Catalogs, "Id", "Name");
 
             return View(new GameViewModel() { Game = game, Catalog = catalog });
         }
