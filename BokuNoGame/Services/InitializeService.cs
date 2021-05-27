@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -65,7 +66,6 @@ namespace BokuNoGame.Services
                     await context.SaveChangesAsync();
                 }
             }
-
         }
     }
 }

@@ -44,9 +44,10 @@ namespace RolesApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new User { UserName = model.Login };
-                // добавляем пользователя
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var user = new User { UserName = model.Login };
+                user.Photo = System.IO.File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Files", "default-avatar.jpg"));
+                    // добавляем пользователя
+                    var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     // установка куки
