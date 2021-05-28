@@ -8,4 +8,46 @@
     <p>
         <a class="btn btn-outline-danger" asp-area="" asp-controller="Admin" asp-action="NewReviews">Отрецензировать отзывы</a>
     </p>
+    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#exampleModal">
+        Добавить новость на сервис
+    </button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog mw-100 w-50" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Новая новость</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form asp-controller="Home" asp-action="CreateNews" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" id="isLocal" name="isLocal" value="true"/>
+                        <div class="form-group row">
+                            <label for="title" class="col-sm-2 col-form-label">Заголовок</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" id="title" name="title" type="text" size="35" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="text" class="col-sm-2 col-form-label">Текст</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" id="text" name="text" rows="5" cols="60"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="reference" class="col-sm-2 col-form-label">Ссылка</label>
+                            <div class="col-sm-10">
+                                <input class="form-control" id="reference" name="reference" type="text" size="35" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <input type="submit" class="btn btn-primary" value="Опубликовать" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
