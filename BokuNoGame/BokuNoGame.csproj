@@ -6,6 +6,7 @@
     <PackageProjectUrl>https://github.com/TikhonovEM/BokuNoGame</PackageProjectUrl>
     <RepositoryType>Public</RepositoryType>
     <Description>Библиотека игр</Description>
+    <UserSecretsId>a31b30c6-0cd6-4286-9bca-3f205ffa72a7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
