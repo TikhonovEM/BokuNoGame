@@ -2,6 +2,44 @@
 @inject AppDBContext context
 @inject Microsoft.AspNetCore.Identity.SignInManager<User> signInManager
 @inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
+<style>
+    /*Reviews*/
+.review {
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    padding: 4px;
+    margin: 8px 0
+}
+
+    .review::after {
+        clear: both;
+    }
+
+    .review img {
+        float: left;
+        margin-right: 20px;
+        border-radius: 50%;
+        max-width: 45px;
+    }
+
+    .review span {
+        font-size: 20px;
+        margin-right: 15px;
+    }
+
+@@media (max-width: 500px) {
+    .review {
+        text-align: center;
+    }
+
+        .review img {
+            margin: auto;
+            float: none;
+            display: block;
+            max-width: 45px;
+        }
+}
+</style>
 @section Scripts{
 <script src="~/js/rateit/scripts/jquery.rateit.min.js"></script>
 <script>
@@ -123,31 +161,31 @@
         <div>
             @if (signInManager.IsSignedIn(User))
             {
+                <h4 class="bg-secondary"><b>Твой отзыв:</b></h4>
                 <form asp-controller="Game" asp-action="CreateGameReview" asp-route-gameId="@Model.Game.Id" method="post">
-                    <div class="form-group">
-                        <textarea placeholder="Введите текст отзыва..." name="text" rows="4" cols="100"></textarea>
-                        <input class="btn btn-outline-success" type="submit" value="Добавить отзыв" />
+                    <div class="row">
+                        <div class="col-sm-11" style="padding-right:0px;">
+                            <textarea class="form-control" placeholder="Введите текст отзыва..." name="text" rows="2" maxlength="1000"></textarea>                            
+                        </div>
+                        <div class="col-sm-1" style="padding-left:0px;">
+                            <button class="btn btn-outline-success h-100 w-100" type="submit">
+                                <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
                 </form>
             }
-            <ul>
-                @foreach (var review in context.GetGameReviews(Model.Game.Id, true))
-                {
-                    <li>
-                        <div>
-                            <span>
-                                @userManager.FindByIdAsync(review.UserId).GetAwaiter().GetResult().UserName
-                            </span>
-                            <span>
-                                @review.Date.ToString("g")
-                            </span>
-                            <div>
-                                @review.Text
-                            </div>
-                        </div>
-                    </li>
-                }
-            </ul>
+            @foreach (var review in context.GetGameReviews(Model.Game.Id, true).OrderBy(r => r.Date))
+            {
+                var user = userManager.FindByIdAsync(review.UserId).GetAwaiter().GetResult();
+                <div class="review">
+                    <img src="data:image;base64,@System.Convert.ToBase64String(user.Photo)" />
+                    <span>@user.Nickname</span>@review.Date.ToString("g")
+                    <p>
+                        @review.Text
+                    </p>
+                </div>
+            }
         </div>
     </section>
 </div>
