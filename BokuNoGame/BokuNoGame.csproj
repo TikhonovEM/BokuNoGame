@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RepositoryUrl>https://github.com/TikhonovEM/BokuNoGame</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/TikhonovEM/BokuNoGame</PackageProjectUrl>
+    <RepositoryType>Public</RepositoryType>
+    <Description>Библиотека игр</Description>
   </PropertyGroup>
 
   <ItemGroup>
