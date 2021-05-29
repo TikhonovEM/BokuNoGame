@@ -12,14 +12,14 @@
     <div>
         <h3 class="bg-secondary text-left">Популярно среди пользователей сайта:</h3>
         <ul class="list-inline text-center">
-            @foreach (var game in context.GetTopMostPopularGames(10))
+            @foreach (var game in context.GetTopMostPopularGames(8))
             {
-                <li class="d-inline-block" style="width:9%">
+                <li class="d-inline-block" style="width:11%">
                     <a asp-controller="Game" asp-action="Game" asp-route-gameId="@game.Id" class="social-icon">
                         <div>
-                            <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" width="150" height="200" />
+                            <img src="data:image;base64,@System.Convert.ToBase64String(game.Logo)" style="width:9rem;height:12em;" />
                         </div>
-                        <span class="d-inline-block text-truncate" style="max-width:150px;">@game.Name</span>
+                        <span class="d-inline-block text-truncate" style="max-width:9rem;">@game.Name</span>
                     </a>
                 </li>
             }

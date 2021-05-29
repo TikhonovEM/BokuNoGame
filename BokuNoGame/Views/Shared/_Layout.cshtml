@@ -21,7 +21,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">No Game No Life</a>
+                <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index" style="width:160px;">No Game No Life</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -33,7 +33,7 @@
                             <form class="form-inline" asp-controller="Game" asp-action="GameByName" method="post">
                                 <div class="input-group">
                                     <label for="likeName"></label>
-                                    <input id="likeName" name="likeName" class="form-control-sm" size="140" placeholder="Введите название игры" />
+                                    <input type="search" id="likeName" name="likeName" class="form-control-sm" placeholder="Введите название игры" size="100" />
                                     <button class="btn btn-outline-secondary" type="submit">
                                         <i class="fa fa-search"></i>
                                     </button>
