@@ -1,5 +1,6 @@
 ﻿@model BokuNoGame.ViewModels.ProfileViewModel
 @inject AppDBContext context
+@inject Microsoft.AspNetCore.Identity.UserManager<User> userManager
 
 @section Scripts{
 
@@ -107,56 +108,59 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                Изменить профиль
-            </button>
-            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Данные профиля</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+        @if (Model.User.Id.Equals(userManager.GetUserId(User)))
+        {
+            <div class="col-md-2">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                    Изменить профиль
+                </button>
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Данные профиля</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form asp-action="EditProfile" asp-route-user="@Model" method="post">
+                                <div class="modal-body">
+                                    <div class="form-group row">
+                                        <label asp-for="@Model.User.Nickname" class="col-sm-4 col-form-label">Никнейм</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" asp-for="@Model.User.Nickname" size="35" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label asp-for="@Model.User.FullName" class="col-sm-4 col-form-label">Полное имя</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" asp-for="@Model.User.FullName" size="35" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label asp-for="@Model.User.Email" class="col-sm-4 col-form-label">Email</label>
+                                        <div class="col-sm-3">
+                                            <input type="email" asp-for="@Model.User.Email" size="35" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label asp-for="@Model.User.BirthDate" class="col-sm-4 col-form-label">Дата рождения</label>
+                                        <div class="col-sm-3">
+                                            <input type="date" asp-for="@Model.User.BirthDate" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                                    <input type="submit" class="btn btn-primary" value="Обновить" />
+                                </div>
+                            </form>
                         </div>
-                        <form asp-action="EditProfile" asp-route-user="@Model" method="post">
-                            <div class="modal-body">
-                                <div class="form-group row">
-                                    <label asp-for="@Model.User.Nickname" class="col-sm-4 col-form-label">Никнейм</label>
-                                    <div class="col-sm-3">
-                                        <input type="text" asp-for="@Model.User.Nickname" size="35" />
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label asp-for="@Model.User.FullName" class="col-sm-4 col-form-label">Полное имя</label>
-                                    <div class="col-sm-3">
-                                        <input type="text" asp-for="@Model.User.FullName" size="35" />
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label asp-for="@Model.User.Email" class="col-sm-4 col-form-label">Email</label>
-                                    <div class="col-sm-3">
-                                        <input type="email" asp-for="@Model.User.Email" size="35" />
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label asp-for="@Model.User.BirthDate" class="col-sm-4 col-form-label">Дата рождения</label>
-                                    <div class="col-sm-3">
-                                        <input type="date" asp-for="@Model.User.BirthDate" />
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-                                <input type="submit" class="btn btn-primary" value="Обновить" />
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>    
+        }
+    </div>
     <script>
         $("#file").change(function () {
             $("#profile-photo").submit();

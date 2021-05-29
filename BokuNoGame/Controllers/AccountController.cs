@@ -109,17 +109,18 @@ namespace RolesApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Route("account/profile/{userName?}")]
         [Authorize]
-        public async Task<IActionResult> Profile(ProfileViewModel model)
+        public async Task<IActionResult> Profile(ProfileViewModel model, string userName = null)
         {
-            model.User = await _userManager.GetUserAsync(User);
+            model.User = userName != null? await _userManager.FindByNameAsync(userName) : await _userManager.GetUserAsync(User);
             model.GameSummaries = _dbContext.GetGameSummaries(model.User.Id);
             ViewBag.Catalogs = new SelectList(_dbContext.Catalogs, "Id", "Name");
             return View(model);
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Administrate(AdministrateViewModel model)
+        public IActionResult Administrate(AdministrateViewModel model)
         {           
             return View(model);
         }
