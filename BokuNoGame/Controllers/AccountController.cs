@@ -15,6 +15,10 @@ using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using Newtonsoft.Json;
+using System.Text;
+using BokuNoGame.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace RolesApp.Controllers
 {
@@ -197,6 +201,7 @@ namespace RolesApp.Controllers
             return RedirectToAction("Profile", new { model });
         }
 
+        [Authorize]
         public async Task<IActionResult> EditProfile(ProfileViewModel model)
         {
             var user = await _userManager.GetUserAsync(User);     
@@ -207,6 +212,71 @@ namespace RolesApp.Controllers
             model.User = user;
             await _userManager.UpdateAsync(model.User);
             return RedirectToAction("Profile", new { model });
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ExportSummaries(string userId = null)
+        {
+            userId ??= _userManager.GetUserId(User);
+            var gs = await _dbContext.GetGameSummaries(userId)
+                .Select(g => new GameSummaryDTO 
+                { 
+                    GameName = g.GameName,
+                    Rate = g.Rate,
+                    Genre = g.Genre,
+                    CatalogId = g.CatalogId,
+                    GameId = g.GameId
+                })
+                .ToListAsync();
+            var serializedGs = JsonConvert.SerializeObject(gs);
+            var fileBytes = Encoding.UTF8.GetBytes(serializedGs);
+            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Json, "ExportedLibrary.json");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ImportSummaries(IFormFile jsonfile ,string userId = null)
+        {
+            userId ??= _userManager.GetUserId(User);
+            if (jsonfile != null)
+            {
+                byte[] jsonBytes = null;
+                using (var reader = new BinaryReader(jsonfile.OpenReadStream()))
+                {
+                    jsonBytes = reader.ReadBytes((int)jsonfile.Length);
+                }
+                var json = Encoding.UTF8.GetString(jsonBytes);
+                var gs = JsonConvert.DeserializeObject<List<GameSummaryDTO>>(json);
+                var existingGS = _dbContext.GetGameSummaries(userId);
+                foreach(var gameSummaryDTO in gs.Where(gs => !existingGS.Any(egs => egs.GameId.Equals(gs.GameId))))
+                {
+                    var gameSummary = new GameSummary();
+                    var game = await _dbContext.Games.FindAsync(gameSummaryDTO.GameId);
+                    gameSummary.GameName = game.Name;
+                    gameSummary.Game = game;
+                    gameSummary.GameId = game.Id;
+                    gameSummary.Rate = gameSummaryDTO.Rate;
+                    if (gameSummaryDTO.Rate.HasValue)
+                    {
+                        var gameRate = new GameRate()
+                        {
+                            AuthorId = userId,
+                            GameId = game.Id,
+                            Rate = gameSummaryDTO.Rate.Value
+                        };
+                        await _dbContext.GameRates.AddAsync(gameRate);
+                    }
+                    gameSummary.Genre = game.Genre;
+                    gameSummary.GenreWrapper = game.Genre.GetAttribute<DisplayAttribute>().Name;
+                    gameSummary.UserId = userId;
+                    var catalog = await _dbContext.Catalogs.FindAsync(gameSummaryDTO.CatalogId);
+                    gameSummary.Catalog = catalog;
+                    gameSummary.CatalogId = catalog.Id;
+                    await _dbContext.GameSummaries.AddAsync(gameSummary);
+                }
+
+                await _dbContext.SaveChangesAsync();                
+            }
+            return RedirectToAction("Profile");
         }
     }
 }
