@@ -141,6 +141,14 @@ namespace BokuNoGame.Controllers
             if (summary != null)
             {
                 _context.GameSummaries.Remove(summary);
+                if (summary.Rate.HasValue)
+                {
+                    var gameRate = _context.GameRates.FirstOrDefault(gr => gr.AuthorId.Equals(summary.UserId) && gr.GameId.Equals(summary.GameId));
+                    if (gameRate != null)
+                    {
+                        _context.GameRates.Remove(gameRate);
+                    }
+                }
                 _context.SaveChanges();
                 return Ok();
             }
