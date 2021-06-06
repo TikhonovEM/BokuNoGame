@@ -27,12 +27,18 @@ namespace BokuNoGame.IntegrationServices
 
             var pythonPath = Startup.Configuration["IntegrationSettings:EpicGamesIntegrationSettings:PythonPath"];
 
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo(pythonPath, Path.Combine(scriptFolder, script))
+            var slugs = _appDBContext.IntegrationInfos
+                .Where(ii => ii.ExternalSystemDescriptor.Equals(ExternalSystemDescriptor))
+                .Select(ii => ii.ExternalGameIdStr);
+
+            var p = new Process
             {
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
+                StartInfo = new ProcessStartInfo(pythonPath, Path.Combine(scriptFolder, script))
+                {
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
             };
             p.Start();
 
