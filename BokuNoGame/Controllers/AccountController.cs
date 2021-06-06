@@ -125,7 +125,7 @@ namespace RolesApp.Controllers
             return View(model);
         }
 
-        public IActionResult LoadUserGameSummaries(int catalogId)
+        public IActionResult LoadUserGameSummaries(int catalogId, string userId = null)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace RolesApp.Controllers
                 int recordsTotal = 0;
 
                 // Getting all Customer data  
-                var userId = _userManager.GetUserId(User);
+                userId ??= _userManager.GetUserId(User);
                 var customerData = _dbContext.GetGameSummaries(userId);
                 customerData = customerData.Include(gs => gs.Catalog).Where(gs => gs.CatalogId == catalogId);
 
